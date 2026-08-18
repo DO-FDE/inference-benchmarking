@@ -159,34 +159,36 @@ def _parse_server_metrics_file(path):
 def _build_server_metrics_map(search_root):
     """
     Scan a run tree for per-concurrency server_metrics and return
-    {concurrency:int -> metrics dict}. aiperf writes one under each
-    'concurrency_<N>__requests_<M>/' folder (preferring the profiling phase).
-    Also captures a single unkeyed result (key None) for single-point runs.
+    {concurrency:int -> metrics dict}. aiperf writes several per point; we use
+    ONLY the profiling-phase file ('.../phases/profiling/server_metrics.json'),
+    because the warmup file and the top-level '*_server_metrics.json' hold
+    partial or cumulative counters that yield wrong ratios (e.g. >100% cache).
+    Falls back to any server_metrics.json only if no profiling-phase file exists.
     """
     import re as _re
-    result = {}
     if not search_root or not os.path.isdir(search_root):
-        return result
-    # every server_metrics.json in the tree; prefer phases/profiling variants
+        return {}
     all_sm = glob.glob(os.path.join(search_root, "**", "server_metrics.json"), recursive=True)
-    # also the top-level '*_server_metrics.json' per point
-    all_sm += glob.glob(os.path.join(search_root, "**", "*_server_metrics.json"), recursive=True)
-    for p in all_sm:
-        # prefer the profiling phase over warmup for the same point
+    # split into profiling-phase files vs the rest
+    prof = [p for p in all_sm if os.path.join("phases", "profiling") in p]
+    other = [p for p in all_sm if p not in prof and "warmup" not in p]  # top-level, not warmup
+
+    def _key(p):
         m = _re.search(r"concurrency_(\d+)__requests_\d+", p)
-        conc = int(m.group(1)) if m else None
-        is_profiling = "profiling" in p
-        is_warmup = "warmup" in p
+        return int(m.group(1)) if m else None
+
+    result = {}
+    for p in prof:  # profiling phase wins
         metrics = _parse_server_metrics_file(p)
-        if not metrics:
-            continue
-        key = conc
-        # keep the best source: profiling > top-level(point) > warmup
-        prev = result.get(key)
-        rank = 2 if is_profiling else (0 if is_warmup else 1)
-        if prev is None or rank >= prev[0]:
-            result[key] = (rank, metrics)
-    return {k: v[1] for k, v in result.items()}
+        if metrics:
+            result[_key(p)] = metrics
+    for p in other:  # only fill gaps profiling didn't cover
+        k = _key(p)
+        if k not in result:
+            metrics = _parse_server_metrics_file(p)
+            if metrics:
+                result[k] = metrics
+    return result
 
 
 def _discover_jsons(sweep_dir):
