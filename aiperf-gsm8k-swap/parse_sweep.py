@@ -105,38 +105,17 @@ def _load_combos_from_json(path):
     return [{"parameters": params, "metrics": d}]
 
 
-def _read_server_metrics(json_path):
-    """
-    aiperf writes a companion '*_server_metrics.json' next to each profile JSON,
-    holding the server's /metrics counters (as totals) for that run's window.
-    Returns a dict with cache-hit% / accept% / accept-length / per-position, or
-    {} if not found. Metrics are read scoped to the actual benchmark window, so
-    no manual before/after scraping is needed.
-    """
-    import os as _os
-    # candidate locations: same dir, and a sibling '<stem>_server_metrics.json'
-    d = _os.path.dirname(json_path)
-    stem = _os.path.basename(json_path).replace(".json", "")
-    cands = [
-        _os.path.join(d, stem + "_server_metrics.json"),
-        _os.path.join(d, "server_metrics.json"),
-    ]
-    # also look under a phases/profiling subdir if present
-    cands += glob.glob(_os.path.join(d, "**", "server_metrics.json"), recursive=True)
-    path = next((c for c in cands if _os.path.isfile(c)), None)
-    if not path:
-        return {}
+def _parse_server_metrics_file(path):
+    """Parse ONE aiperf server_metrics.json -> dict of cache/accept metrics ({} on failure)."""
     try:
         with open(path) as f:
             sm = json.load(f)
     except Exception:
         return {}
 
-    # totals/rates we need, keyed by base metric name (strip 'vllm:').
     # Prefer the per-window 'rate' field over cumulative 'total': for a ratio
     # (hits/queries, accepted/drafted) the rate-based value is correct PER RUN
-    # even when 'total' is cumulative-since-server-start across a sweep. They
-    # coincide for a single run; rate is the robust choice for multi-point sweeps.
+    # even when 'total' is cumulative-since-server-start across a sweep.
     want = {
         "prefix_cache_hits": None, "prefix_cache_queries": None,
         "spec_decode_num_accepted_tokens": None,
@@ -151,7 +130,6 @@ def _read_server_metrics(json_path):
             for s in m.get("series", []):
                 st = s.get("stats", {}) or {}
                 lbl = s.get("labels", {}) or {}
-                # prefer per-window rate; fall back to cumulative total
                 val = st.get("rate")
                 if val is None:
                     val = st.get("total", st.get("sum"))
@@ -160,7 +138,7 @@ def _read_server_metrics(json_path):
                         per_pos[int(lbl["position"])] = per_pos.get(int(lbl["position"]), 0) + val
                     continue
                 if base in want and val is not None:
-                    want[base] = (want[base] or 0) + val  # sum across engines/endpoints
+                    want[base] = (want[base] or 0) + val
 
     out = {}
     H, Q = want["prefix_cache_hits"], want["prefix_cache_queries"]
@@ -176,6 +154,39 @@ def _read_server_metrics(json_path):
     if per_pos:
         out["Accept/Pos"] = "/".join(str(int(per_pos[k])) for k in sorted(per_pos))
     return out
+
+
+def _build_server_metrics_map(search_root):
+    """
+    Scan a run tree for per-concurrency server_metrics and return
+    {concurrency:int -> metrics dict}. aiperf writes one under each
+    'concurrency_<N>__requests_<M>/' folder (preferring the profiling phase).
+    Also captures a single unkeyed result (key None) for single-point runs.
+    """
+    import re as _re
+    result = {}
+    if not search_root or not os.path.isdir(search_root):
+        return result
+    # every server_metrics.json in the tree; prefer phases/profiling variants
+    all_sm = glob.glob(os.path.join(search_root, "**", "server_metrics.json"), recursive=True)
+    # also the top-level '*_server_metrics.json' per point
+    all_sm += glob.glob(os.path.join(search_root, "**", "*_server_metrics.json"), recursive=True)
+    for p in all_sm:
+        # prefer the profiling phase over warmup for the same point
+        m = _re.search(r"concurrency_(\d+)__requests_\d+", p)
+        conc = int(m.group(1)) if m else None
+        is_profiling = "profiling" in p
+        is_warmup = "warmup" in p
+        metrics = _parse_server_metrics_file(p)
+        if not metrics:
+            continue
+        key = conc
+        # keep the best source: profiling > top-level(point) > warmup
+        prev = result.get(key)
+        rank = 2 if is_profiling else (0 if is_warmup else 1)
+        if prev is None or rank >= prev[0]:
+            result[key] = (rank, metrics)
+    return {k: v[1] for k, v in result.items()}
 
 
 def _discover_jsons(sweep_dir):
@@ -207,16 +218,15 @@ def _discover_jsons(sweep_dir):
 
 def build_rows(combos, gpus, osl_target,
                ttft_p50_target=None, ttft_p90_target=None, gates=None,
-               server_metrics=None):
+               server_metrics_map=None):
     """
     Turn raw combos into validated summary rows.
-    gates: list of (name, itl_p50_ms) tuples. Each becomes a 'Gate:<name>' column
-    (Y/N) on the SAME row -- one row per (shape, concurrency), not one per gate.
-    server_metrics: optional dict of cache/accept metrics merged into every row
-    (they're per-run server totals, shared across the point's rows).
-    Returns (rows, notes).
+    gates: list of (name, itl_p50_ms) tuples -> one 'Gate:<name>' column each.
+    server_metrics_map: {concurrency:int -> metrics dict}; matched per row. A
+    single unkeyed entry (key None) applies to all rows when no per-conc match.
     """
     gates = gates or []
+    smap = server_metrics_map or {}
     rows = []
     notes = []
     for c in combos:
@@ -308,11 +318,16 @@ def build_rows(combos, gpus, osl_target,
         if gates:
             row["SLA Pass"] = "Y" if all_gates_pass else "N"
 
-        # merge server metrics (cache-hit / accept), shared for this run
-        if server_metrics:
+        # merge server metrics (cache-hit / accept), matched by concurrency.
+        sm = smap.get(int(conc) if conc is not None else None)
+        if sm is None and None in smap:
+            sm = smap[None]                       # explicit single-point entry
+        if sm is None and len(smap) == 1:
+            sm = next(iter(smap.values()))        # sole entry -> apply it
+        if sm:
             for k in ("Cache Hit%", "Accept%", "Accept Len", "Accept/Pos"):
-                if k in server_metrics:
-                    row[k] = server_metrics[k]
+                if k in sm:
+                    row[k] = sm[k]
 
         row.update({
             "ISL": round(isl, 1),
@@ -387,6 +402,7 @@ def main():
     ap.add_argument("--profile-name", default=None, help="optional profile label column")
     ap.add_argument("--no-audit", action="store_true", help="omit ISL/OSL/Valid/Notes columns")
     ap.add_argument("--no-server-metrics", action="store_true", help="don't read server_metrics.json")
+    ap.add_argument("--artifacts-dir", default=None, help="explicit dir to scan for per-concurrency server_metrics.json")
     args = ap.parse_args()
 
     gates = list(args.gate)
@@ -402,11 +418,29 @@ def main():
         json_paths = _discover_jsons(args.sweep_dir)
 
     combos = []
-    server_metrics = {}
     for jp in json_paths:
         combos.extend(_load_combos_from_json(jp))
-        if not args.no_server_metrics and not server_metrics:
-            server_metrics = _read_server_metrics(jp)
+
+    # build per-concurrency server-metrics map by scanning the run tree.
+    server_metrics_map = {}
+    if not args.no_server_metrics:
+        search_roots = []
+        if args.artifacts_dir:
+            search_roots.append(args.artifacts_dir)
+        if args.sweep_dir:
+            # the artifacts tree usually sits beside aiperf_results, one level up
+            search_roots.append(args.sweep_dir)
+            search_roots.append(os.path.dirname(os.path.abspath(args.sweep_dir)))
+        for jp in json_paths:
+            search_roots.append(os.path.dirname(os.path.abspath(jp)))
+        for root in search_roots:
+            m = _build_server_metrics_map(root)
+            if m:
+                # merge, preferring keyed (per-conc) entries
+                for k, v in m.items():
+                    server_metrics_map.setdefault(k, v)
+            if server_metrics_map:
+                break
 
     if not combos:
         print("ERROR: no combinations parsed", file=sys.stderr)
@@ -417,7 +451,7 @@ def main():
         ttft_p50_target=args.ttft_p50_target,
         ttft_p90_target=args.ttft_p90_target,
         gates=gates,
-        server_metrics=server_metrics,
+        server_metrics_map=server_metrics_map,
     )
     write_csv(rows, args.out_csv, profile_name=args.profile_name,
               audit=not args.no_audit, gate_names=gate_names)
@@ -427,11 +461,12 @@ def main():
     gate_str = ", ".join(f"{n}<{ms}ms" for n, ms in gates)
     print(f"[{label}] wrote {len(rows)} rows -> {args.out_csv}  "
           f"(gpus={args.gpus}, gates: {gate_str})")
-    if server_metrics:
-        sm = server_metrics
-        print(f"  server metrics: cache_hit={sm.get('Cache Hit%')}% "
-              f"accept={sm.get('Accept%')}% accept_len={sm.get('Accept Len')} "
-              f"per_pos={sm.get('Accept/Pos')}")
+    if server_metrics_map:
+        n_keyed = len([k for k in server_metrics_map if k is not None])
+        sample = next(iter(server_metrics_map.values()))
+        print(f"  server metrics: found for {n_keyed} concurrency point(s); "
+              f"e.g. cache_hit={sample.get('Cache Hit%')}% accept={sample.get('Accept%')}% "
+              f"accept_len={sample.get('Accept Len')}")
     for n in notes:
         print("  [!]", n)
 
