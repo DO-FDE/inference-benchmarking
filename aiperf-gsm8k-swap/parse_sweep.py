@@ -105,6 +105,79 @@ def _load_combos_from_json(path):
     return [{"parameters": params, "metrics": d}]
 
 
+def _read_server_metrics(json_path):
+    """
+    aiperf writes a companion '*_server_metrics.json' next to each profile JSON,
+    holding the server's /metrics counters (as totals) for that run's window.
+    Returns a dict with cache-hit% / accept% / accept-length / per-position, or
+    {} if not found. Metrics are read scoped to the actual benchmark window, so
+    no manual before/after scraping is needed.
+    """
+    import os as _os
+    # candidate locations: same dir, and a sibling '<stem>_server_metrics.json'
+    d = _os.path.dirname(json_path)
+    stem = _os.path.basename(json_path).replace(".json", "")
+    cands = [
+        _os.path.join(d, stem + "_server_metrics.json"),
+        _os.path.join(d, "server_metrics.json"),
+    ]
+    # also look under a phases/profiling subdir if present
+    cands += glob.glob(_os.path.join(d, "**", "server_metrics.json"), recursive=True)
+    path = next((c for c in cands if _os.path.isfile(c)), None)
+    if not path:
+        return {}
+    try:
+        with open(path) as f:
+            sm = json.load(f)
+    except Exception:
+        return {}
+
+    # totals/rates we need, keyed by base metric name (strip 'vllm:').
+    # Prefer the per-window 'rate' field over cumulative 'total': for a ratio
+    # (hits/queries, accepted/drafted) the rate-based value is correct PER RUN
+    # even when 'total' is cumulative-since-server-start across a sweep. They
+    # coincide for a single run; rate is the robust choice for multi-point sweeps.
+    want = {
+        "prefix_cache_hits": None, "prefix_cache_queries": None,
+        "spec_decode_num_accepted_tokens": None,
+        "spec_decode_num_draft_tokens": None,
+        "spec_decode_num_drafts": None,
+    }
+    per_pos = {}
+    eps = (sm.get("data", {}) or {}).get("endpoint_summaries", {}) or {}
+    for _url, summ in eps.items():
+        for name, m in (summ.get("metrics", {}) or {}).items():
+            base = name.replace("vllm:", "")
+            for s in m.get("series", []):
+                st = s.get("stats", {}) or {}
+                lbl = s.get("labels", {}) or {}
+                # prefer per-window rate; fall back to cumulative total
+                val = st.get("rate")
+                if val is None:
+                    val = st.get("total", st.get("sum"))
+                if base == "spec_decode_num_accepted_tokens_per_pos" and "position" in lbl:
+                    if val is not None:
+                        per_pos[int(lbl["position"])] = per_pos.get(int(lbl["position"]), 0) + val
+                    continue
+                if base in want and val is not None:
+                    want[base] = (want[base] or 0) + val  # sum across engines/endpoints
+
+    out = {}
+    H, Q = want["prefix_cache_hits"], want["prefix_cache_queries"]
+    A = want["spec_decode_num_accepted_tokens"]
+    D = want["spec_decode_num_draft_tokens"]
+    N = want["spec_decode_num_drafts"]
+    if H is not None and Q:
+        out["Cache Hit%"] = round(100.0 * H / Q, 2)
+    if A is not None and D:
+        out["Accept%"] = round(100.0 * A / D, 2)
+    if A is not None and N:
+        out["Accept Len"] = round(A / N + 1.0, 2)
+    if per_pos:
+        out["Accept/Pos"] = "/".join(str(int(per_pos[k])) for k in sorted(per_pos))
+    return out
+
+
 def _discover_jsons(sweep_dir):
     """
     Find the per-combination JSON files under a sweep_aggregate dir.
@@ -133,12 +206,17 @@ def _discover_jsons(sweep_dir):
 
 
 def build_rows(combos, gpus, osl_target,
-               ttft_p50_target=None, ttft_p90_target=None, itl_p50_target=None):
+               ttft_p50_target=None, ttft_p90_target=None, gates=None,
+               server_metrics=None):
     """
     Turn raw combos into validated summary rows.
-    Returns (rows, notes) where rows is a list of dicts and notes is a list of
-    human-readable validation/degeneracy messages.
+    gates: list of (name, itl_p50_ms) tuples. Each becomes a 'Gate:<name>' column
+    (Y/N) on the SAME row -- one row per (shape, concurrency), not one per gate.
+    server_metrics: optional dict of cache/accept metrics merged into every row
+    (they're per-run server totals, shared across the point's rows).
+    Returns (rows, notes).
     """
+    gates = gates or []
     rows = []
     notes = []
     for c in combos:
@@ -160,11 +238,10 @@ def build_rows(combos, gpus, osl_target,
         ttft = m.get("time_to_first_token", {}) or {}
         itl = m.get("inter_token_latency", {}) or {}
 
-        # fall back for requests/conc if not in parameters
         if reqs is None:
             reqs = (m.get("request_count") or {}).get("avg")
         if conc is None:
-            conc = osl_n  # last resort; usually present in parameters
+            conc = osl_n
 
         if None in (dur, rps, tot, out, isl, osl):
             notes.append(f"conc={conc}: missing core metrics, skipped")
@@ -199,14 +276,12 @@ def build_rows(combos, gpus, osl_target,
 
         valid = bool(identity_ok and not degenerate)
 
-        # ---- SLA pass/fail ----
+        # ---- latency + gates ----
         ttft_p50 = ttft.get("p50")
         ttft_p90 = ttft.get("p90")
         itl_p50 = itl.get("p50")
         ttft50_ok = _lt(ttft_p50, ttft_p50_target)
         ttft90_ok = _lt(ttft_p90, ttft_p90_target)
-        itl50_ok = _lt(itl_p50, itl_p50_target)
-        sla_pass = bool(valid and ttft50_ok and ttft90_ok and itl50_ok)
 
         row = {
             "Concurrency": int(conc) if conc is not None else None,
@@ -222,13 +297,29 @@ def build_rows(combos, gpus, osl_target,
             "ITL P90(ms)": round(itl.get("p90"), 2) if itl.get("p90") is not None else float("nan"),
             "TTFT P50 OK": "" if ttft_p50_target is None else ("Y" if ttft50_ok else "N"),
             "TTFT P90 OK": "" if ttft_p90_target is None else ("Y" if ttft90_ok else "N"),
-            "ITL P50 OK": "" if itl_p50_target is None else ("Y" if itl50_ok else "N"),
-            "SLA Pass": "Y" if sla_pass else "N",
+        }
+
+        # one pass/fail column per named ITL gate, all on this row
+        all_gates_pass = True
+        for gname, gitl in gates:
+            gate_ok = bool(valid and ttft50_ok and ttft90_ok and _lt(itl_p50, gitl))
+            row[f"Gate:{gname}"] = "Y" if gate_ok else "N"
+            all_gates_pass = all_gates_pass and gate_ok
+        if gates:
+            row["SLA Pass"] = "Y" if all_gates_pass else "N"
+
+        # merge server metrics (cache-hit / accept), shared for this run
+        if server_metrics:
+            for k in ("Cache Hit%", "Accept%", "Accept Len", "Accept/Pos"):
+                if k in server_metrics:
+                    row[k] = server_metrics[k]
+
+        row.update({
             "ISL": round(isl, 1),
             "OSL": round(osl, 1),
             "Valid": valid,
             "Notes": "; ".join(reasons) if reasons else ("identity check failed" if not identity_ok else ""),
-        }
+        })
         rows.append(row)
         if degenerate:
             notes.append(f"conc={conc}: DEGENERATE -- {'; '.join(reasons)} (EXCLUDE from curve)")
@@ -239,18 +330,25 @@ def build_rows(combos, gpus, osl_target,
     return rows, notes
 
 
-# columns written to the final CSV (report cols, then SLA cols, then audit cols)
+# columns written to the final CSV (report cols, then metrics, then gates, then audit)
 REPORT_COLS = [
     "Concurrency", "Requests", "Duration(s)", "Req/s",
     "Input tok/s/GPU", "Output tok/s/GPU", "Total tok/s/GPU",
     "TTFT P50(ms)", "TTFT P90(ms)", "ITL P50(ms)", "ITL P90(ms)",
 ]
-SLA_COLS = ["TTFT P50 OK", "TTFT P90 OK", "ITL P50 OK", "SLA Pass"]
+# server-derived metrics (present only if server_metrics.json was found)
+SERVER_COLS = ["Cache Hit%", "Accept%", "Accept Len", "Accept/Pos"]
+TTFT_OK_COLS = ["TTFT P50 OK", "TTFT P90 OK"]
 AUDIT_COLS = ["ISL", "OSL", "Valid", "Notes"]
 
 
-def write_csv(rows, out_csv, profile_name=None, audit=True):
-    cols = REPORT_COLS + SLA_COLS + (AUDIT_COLS if audit else [])
+def write_csv(rows, out_csv, profile_name=None, audit=True, gate_names=None):
+    gate_cols = [f"Gate:{g}" for g in (gate_names or [])]
+    sla_col = ["SLA Pass"] if gate_cols else []
+    # only include server cols that actually appear in the rows
+    server_present = [c for c in SERVER_COLS if any(c in r for r in rows)]
+    cols = (REPORT_COLS + server_present + TTFT_OK_COLS + gate_cols + sla_col
+            + (AUDIT_COLS if audit else []))
     if profile_name:
         cols = ["Profile"] + cols
     with open(out_csv, "w", newline="") as f:
@@ -263,8 +361,16 @@ def write_csv(rows, out_csv, profile_name=None, audit=True):
             w.writerow({k: rr.get(k, "") for k in cols})
 
 
+def _parse_gate(s):
+    # "name:itl_ms" -> (name, float ms)
+    if ":" not in s:
+        raise argparse.ArgumentTypeError(f"gate must be NAME:ITL_MS, got '{s}'")
+    name, ms = s.rsplit(":", 1)
+    return (name, float(ms))
+
+
 def main():
-    ap = argparse.ArgumentParser(description="Parse aiperf sweep_aggregate into per-GPU summary CSV with SLA pass/fail")
+    ap = argparse.ArgumentParser(description="Parse aiperf sweep into per-GPU summary CSV with per-gate pass/fail + cache-hit/accept")
     src = ap.add_mutually_exclusive_group(required=True)
     src.add_argument("--sweep-dir", help="path to sweep_aggregate dir (auto-discovers JSON)")
     src.add_argument("--json", help="path to a single aiperf JSON export")
@@ -272,11 +378,23 @@ def main():
     ap.add_argument("--osl-target", type=int, default=1000, help="expected OSL (for degeneracy check)")
     ap.add_argument("--ttft-p50-target", type=float, default=None, help="TTFT p50 SLA target in ms")
     ap.add_argument("--ttft-p90-target", type=float, default=None, help="TTFT p90 SLA target in ms")
-    ap.add_argument("--itl-p50-target", type=float, default=None, help="ITL p50 SLA target in ms (25 claw / 66.7 chat)")
+    # gates: repeatable NAME:ITL_MS. Back-compat: --itl-p50-target adds a gate named 'itl'.
+    ap.add_argument("--gate", action="append", type=_parse_gate, default=[],
+                    help="ITL p50 gate as NAME:ITL_MS, repeatable (e.g. --gate claw:25 --gate chat:66.7)")
+    ap.add_argument("--itl-p50-target", type=float, default=None,
+                    help="(compat) single ITL p50 target ms; added as gate 'itl'")
     ap.add_argument("--out-csv", required=True, help="output CSV path")
-    ap.add_argument("--profile-name", default=None, help="optional profile label, added as a column")
+    ap.add_argument("--profile-name", default=None, help="optional profile label column")
     ap.add_argument("--no-audit", action="store_true", help="omit ISL/OSL/Valid/Notes columns")
+    ap.add_argument("--no-server-metrics", action="store_true", help="don't read server_metrics.json")
     args = ap.parse_args()
+
+    gates = list(args.gate)
+    if args.itl_p50_target is not None:
+        gates.append(("itl", args.itl_p50_target))
+    if not gates:
+        gates = [("claw", 25.0), ("chat", 66.7)]  # defaults
+    gate_names = [g[0] for g in gates]
 
     if args.json:
         json_paths = [args.json]
@@ -284,8 +402,11 @@ def main():
         json_paths = _discover_jsons(args.sweep_dir)
 
     combos = []
+    server_metrics = {}
     for jp in json_paths:
         combos.extend(_load_combos_from_json(jp))
+        if not args.no_server_metrics and not server_metrics:
+            server_metrics = _read_server_metrics(jp)
 
     if not combos:
         print("ERROR: no combinations parsed", file=sys.stderr)
@@ -295,15 +416,22 @@ def main():
         combos, args.gpus, args.osl_target,
         ttft_p50_target=args.ttft_p50_target,
         ttft_p90_target=args.ttft_p90_target,
-        itl_p50_target=args.itl_p50_target,
+        gates=gates,
+        server_metrics=server_metrics,
     )
-    write_csv(rows, args.out_csv, profile_name=args.profile_name, audit=not args.no_audit)
+    write_csv(rows, args.out_csv, profile_name=args.profile_name,
+              audit=not args.no_audit, gate_names=gate_names)
 
     # ---- console summary ----
     label = args.profile_name or "(sweep)"
+    gate_str = ", ".join(f"{n}<{ms}ms" for n, ms in gates)
     print(f"[{label}] wrote {len(rows)} rows -> {args.out_csv}  "
-          f"(gpus={args.gpus}, osl_target={args.osl_target}, "
-          f"ttft_p50<={args.ttft_p50_target}, ttft_p90<={args.ttft_p90_target}, itl_p50<={args.itl_p50_target})")
+          f"(gpus={args.gpus}, gates: {gate_str})")
+    if server_metrics:
+        sm = server_metrics
+        print(f"  server metrics: cache_hit={sm.get('Cache Hit%')}% "
+              f"accept={sm.get('Accept%')}% accept_len={sm.get('Accept Len')} "
+              f"per_pos={sm.get('Accept/Pos')}")
     for n in notes:
         print("  [!]", n)
 
@@ -312,25 +440,16 @@ def main():
         peak = max(valid, key=lambda r: r["Total tok/s/GPU"])
         print(f"  peak valid throughput: {peak['Total tok/s/GPU']} tok/s/GPU at conc {peak['Concurrency']}")
 
-    # Max concurrency under the ITL gate (the "concurrency as high as possible
-    # with P50 ITL under target" question). Highest-concurrency VALID point that
-    # meets the ITL p50 gate.
-    if args.itl_p50_target is not None:
-        under_gate = [r for r in valid if r["ITL P50 OK"] == "Y"]
-        if under_gate:
-            best = max(under_gate, key=lambda r: (r["Concurrency"] or -1))
-            ttft_note = ""
-            if args.ttft_p50_target is not None or args.ttft_p90_target is not None:
-                ttft_note = (f" | TTFT p50={best['TTFT P50(ms)']}ms ({best['TTFT P50 OK']}) "
-                             f"p90={best['TTFT P90(ms)']}ms ({best['TTFT P90 OK']})")
-            print(f"  MAX concurrency under ITL {args.itl_p50_target}ms: "
-                  f"conc={best['Concurrency']} "
-                  f"(ITL p50={best['ITL P50(ms)']}ms, "
-                  f"in={best['Input tok/s/GPU']}, out={best['Output tok/s/GPU']} tok/s/GPU)"
-                  f"{ttft_note} | overall SLA Pass={best['SLA Pass']}")
+    # max concurrency under each gate
+    for gname, gms in gates:
+        under = [r for r in valid if r.get(f"Gate:{gname}") == "Y"]
+        if under:
+            best = max(under, key=lambda r: (r["Concurrency"] or -1))
+            print(f"  MAX concurrency under {gname} (ITL<{gms}ms): conc={best['Concurrency']} "
+                  f"(ITL p50={best['ITL P50(ms)']}ms, in={best['Input tok/s/GPU']}, "
+                  f"out={best['Output tok/s/GPU']} tok/s/GPU)")
         else:
-            print(f"  MAX concurrency under ITL {args.itl_p50_target}ms: NONE "
-                  f"(no valid point met the ITL gate -- server too slow even at lowest concurrency)")
+            print(f"  MAX concurrency under {gname} (ITL<{gms}ms): NONE")
 
 
 if __name__ == "__main__":

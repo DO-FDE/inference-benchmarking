@@ -375,29 +375,31 @@ for shape in "${SHAPES[@]}"; do
     sweep_dir="$PROFILE_ARTIFACT_DIR"
     [ -d "$PROFILE_ARTIFACT_DIR/sweep_aggregate" ] && sweep_dir="$PROFILE_ARTIFACT_DIR/sweep_aggregate"
 
-    # -------- score the SAME run against each ITL gate (no re-run) --------
-    for g in "${GATES[@]}"; do
-      IFS=':' read -r gname itl_target <<< "$g"
-      per_csv="$RESULTS_DIR/summary_${runname}_${gname}_${RUN_TS}.csv"
-      log "Scoring ${runname} against gate '${gname}' (ITL<=${itl_target}ms) -> ${per_csv}"
-      if python3 "$PARSER" \
-           --sweep-dir "$sweep_dir" \
-           --gpus "$GPUS" \
-           --osl-target "$OUTPUT_TOKENS_MEAN" \
-           --ttft-p50-target "$ttft50" \
-           --ttft-p90-target "$ttft90" \
-           --itl-p50-target "$itl_target" \
-           --profile-name "${runname}_${gname}" \
-           --out-csv "$per_csv" 2>&1 | tee -a "$MASTER_LOG"; then
-        if [ "$combined_header_written" = false ]; then
-          cat "$per_csv" >> "$COMBINED_CSV"; combined_header_written=true
-        else
-          tail -n +2 "$per_csv" >> "$COMBINED_CSV"
-        fi
+    # -------- score the SAME run against ALL gates in ONE pass --------
+    # parse_sweep now emits one row per (shape,concurrency) with a Gate:<name>
+    # column per gate (plus Cache Hit% / Accept% from the server metrics), so we
+    # call it once with every --gate instead of once per gate.
+    GATE_FLAGS=()
+    for g in "${GATES[@]}"; do GATE_FLAGS+=(--gate "$g"); done
+    per_csv="$RESULTS_DIR/summary_${runname}_${RUN_TS}.csv"
+    log "Scoring ${runname} against gates: ${GATES[*]} -> ${per_csv}"
+    if python3 "$PARSER" \
+         --sweep-dir "$sweep_dir" \
+         --gpus "$GPUS" \
+         --osl-target "$OUTPUT_TOKENS_MEAN" \
+         --ttft-p50-target "$ttft50" \
+         --ttft-p90-target "$ttft90" \
+         "${GATE_FLAGS[@]}" \
+         --profile-name "${runname}" \
+         --out-csv "$per_csv" 2>&1 | tee -a "$MASTER_LOG"; then
+      if [ "$combined_header_written" = false ]; then
+        cat "$per_csv" >> "$COMBINED_CSV"; combined_header_written=true
       else
-        log "WARN: parse failed for ${runname}_${gname}."
+        tail -n +2 "$per_csv" >> "$COMBINED_CSV"
       fi
-    done
+    else
+      log "WARN: parse failed for ${runname}."
+    fi
   done
 done
 log "=== Combined results: $COMBINED_CSV ==="
