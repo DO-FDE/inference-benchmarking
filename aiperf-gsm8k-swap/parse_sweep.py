@@ -145,13 +145,18 @@ def _parse_server_metrics_file(path):
     A = want["spec_decode_num_accepted_tokens"]
     D = want["spec_decode_num_draft_tokens"]
     N = want["spec_decode_num_drafts"]
-    if H is not None and Q:
+    # Only emit physically-possible values. A mistimed/near-empty scrape can yield
+    # hits>queries (cache >100%) or drafts~0 (accept 0% / len 1) -- treat as missing
+    # rather than reporting garbage. Require a meaningful sample size too.
+    MIN_Q = 1000.0   # need real cache traffic
+    MIN_D = 100.0    # need real draft traffic
+    if H is not None and Q and Q >= MIN_Q and 0.0 <= H <= Q:
         out["Cache Hit%"] = round(100.0 * H / Q, 2)
-    if A is not None and D:
+    if A is not None and D and D >= MIN_D and 0.0 <= A <= D:
         out["Accept%"] = round(100.0 * A / D, 2)
-    if A is not None and N:
-        out["Accept Len"] = round(A / N + 1.0, 2)
-    if per_pos:
+        if N:
+            out["Accept Len"] = round(A / N + 1.0, 2)
+    if per_pos and out.get("Accept%") is not None:
         out["Accept/Pos"] = "/".join(str(int(per_pos[k])) for k in sorted(per_pos))
     return out
 
