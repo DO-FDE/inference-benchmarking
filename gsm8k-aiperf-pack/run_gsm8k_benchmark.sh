@@ -51,11 +51,12 @@ Options:
   --concurrency LIST    Comma-separated, e.g. 16,24           (default: 16)
   --req-mult N          Requests per concurrency = N x conc   (default: 5)
   --warmup N            Warmup requests                       (default: 3)
-  --seed N              Random seed                           (default: 42)
+  --seed N              Prefix-pool seed; tails use N+conc    (default: 42)
   --gpus N              GPU count, for per-GPU throughput     (default: 8)
   --corpus PATH         GSM8K corpus text                     (default: ./gsm8k_corpus.txt)
-  --prompts PATH        Reuse an existing prompt JSONL (skips generation)
-  --keep-prompts        Do not delete the generated prompt JSONL on exit
+  --prompts PATH        Reuse one prompt JSONL for every point (skips generation;
+                        exact sequences replay and inflate cache hit rate)
+  --keep-prompts        Do not delete generated prompt JSONLs on exit
   --out-dir PATH        Results directory
 EOF
 }
@@ -98,32 +99,21 @@ fi
 mkdir -p "$OUT_DIR"
 
 # Generated prompt files are large (~250KB/entry at ISL 68000); clean up unless asked not to.
-GENERATED=""
+GENERATED=()
 cleanup() {
-    if [ -n "$GENERATED" ] && [ "$KEEP_PROMPTS" = false ]; then
-        rm -f "$GENERATED"
+    if [ "$KEEP_PROMPTS" = false ] && [ ${#GENERATED[@]} -gt 0 ]; then
+        rm -f "${GENERATED[@]}"
     fi
 }
 trap cleanup EXIT INT TERM
 
-if [ -z "$PROMPTS" ]; then
+FIXED_PROMPTS="$PROMPTS"
+if [ -z "$FIXED_PROMPTS" ]; then
     [ -f "$CORPUS" ] || {
         echo "ERROR: corpus not found: $CORPUS" >&2
         echo "Build it first:  python3 $HERE/scripts/make_gsm8k_corpus.py $CORPUS 4272850" >&2
         exit 1
     }
-    # One entry per request at the highest concurrency, so no entry is reused
-    # within a point more than the prefix pool intends.
-    max_conc=$(echo "$CONCURRENCY" | tr ',' '\n' | sort -n | tail -1)
-    entries=$(( max_conc * REQ_MULT ))
-    PROMPTS="$OUT_DIR/prompts.jsonl"
-    GENERATED="$PROMPTS"
-    echo "=== building prompts (${entries} entries, ISL ${ISL}, ${CACHE}% cached prefix) ==="
-    python3 "$HERE/scripts/make_prompt_file.py" "$PROMPTS" \
-        --corpus "$CORPUS" --tokenizer "$TOKENIZER" \
-        --isl "$ISL" --cache "$CACHE" \
-        --num-prefix-prompts "$NUM_PREFIX_PROMPTS" \
-        --entries "$entries" --seed "$SEED" || exit 1
 fi
 
 echo
@@ -132,6 +122,11 @@ echo "  model       : $MODEL"
 echo "  url         : $URL"
 echo "  ISL/OSL     : $ISL / $OSL   (cached prefix ${CACHE}%)"
 echo "  concurrency : $CONCURRENCY"
+if [ -n "$FIXED_PROMPTS" ]; then
+    echo "  prompts     : $FIXED_PROMPTS  (reused at every point)"
+else
+    echo "  prompts     : prefix seed $SEED, unique tails per conc (seed+conc)"
+fi
 echo "  results     : $OUT_DIR"
 echo
 
@@ -141,6 +136,22 @@ for conc in $(echo "$CONCURRENCY" | tr ',' ' '); do
     art="$OUT_DIR/concurrency_${conc}"
     mkdir -p "$art"
     echo "--- concurrency $conc ($reqs requests) ---"
+
+    if [ -n "$FIXED_PROMPTS" ]; then
+        PROMPTS="$FIXED_PROMPTS"
+    else
+        # Same prefix pool (--seed) at every point so a live server can keep
+        # hitting ~cache%. New tail seed so later points are not exact replays.
+        tail_seed=$((SEED + conc))
+        PROMPTS="$art/prompts.jsonl"
+        GENERATED+=("$PROMPTS")
+        echo "    building prompts (prefix seed $SEED, tail seed $tail_seed)"
+        python3 "$HERE/scripts/make_prompt_file.py" "$PROMPTS" \
+            --corpus "$CORPUS" --tokenizer "$TOKENIZER" \
+            --isl "$ISL" --cache "$CACHE" \
+            --num-prefix-prompts "$NUM_PREFIX_PROMPTS" \
+            --entries "$reqs" --seed "$SEED" --tail-seed "$tail_seed" || exit 1
+    fi
 
     aiperf profile \
         --model "$MODEL" \
@@ -168,11 +179,19 @@ for conc in $(echo "$CONCURRENCY" | tr ',' ' '); do
     fi
 done
 
+if [ -n "$FIXED_PROMPTS" ]; then
+    prompt_source="$FIXED_PROMPTS"
+    unique_tails=false
+else
+    prompt_source="per-conc (prefix seed $SEED, tails seed+conc)"
+    unique_tails=true
+fi
 cat > "$OUT_DIR/run_meta.json" <<EOF
 {"model": "$MODEL", "url": "$URL", "isl": $ISL, "osl": $OSL, "cache": $CACHE,
  "num_prefix_prompts": $NUM_PREFIX_PROMPTS, "concurrency": "$CONCURRENCY",
  "req_mult": $REQ_MULT, "warmup": $WARMUP, "seed": $SEED, "gpus": $GPUS,
- "prompt_source": "input-file", "corpus": "$CORPUS"}
+ "prompt_source": "$prompt_source", "unique_tails_per_conc": $unique_tails,
+ "corpus": "$CORPUS"}
 EOF
 
 echo
