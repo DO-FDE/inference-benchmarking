@@ -11,9 +11,16 @@ The cached-prefix behaviour is reproduced here rather than delegated to aiperf.
 prefixes of L tokens and reuse them across requests", which is what this script
 does. vLLM's prefix cache keys on the token sequence, so it hits the same way.
 
+`--seed` draws the reused prefix pool. `--tail-seed` draws the fresh suffix of
+each entry (defaults to `--seed`). Keep `--seed` fixed and vary `--tail-seed`
+across concurrency points so prefixes stay cacheable while full sequences are
+not exact replays of a previous point.
+
 Usage:
     python3 make_prompt_file.py prompts.jsonl \
         --isl 68000 --cache 93 --num-prefix-prompts 8 --entries 300
+    python3 make_prompt_file.py prompts.jsonl \
+        --seed 42 --tail-seed 54 --isl 68000 --cache 93 --entries 60
 """
 
 from __future__ import annotations
@@ -34,7 +41,13 @@ def main() -> int:
     ap.add_argument("--cache", type=int, default=93, help="percent of ISL that is a reused prefix")
     ap.add_argument("--num-prefix-prompts", type=int, default=8)
     ap.add_argument("--entries", type=int, default=300)
-    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--seed", type=int, default=42, help="RNG seed for the reused prefix pool")
+    ap.add_argument(
+        "--tail-seed",
+        type=int,
+        default=None,
+        help="RNG seed for fresh suffixes (default: same as --seed)",
+    )
     args = ap.parse_args()
 
     if not args.corpus.exists():
@@ -51,14 +64,16 @@ def main() -> int:
 
     prefix_len = args.isl * args.cache // 100
     fresh_len = args.isl - prefix_len
+    tail_seed = args.seed if args.tail_seed is None else args.tail_seed
     print(
         f"corpus={n_corpus:,} tokens | prefix={prefix_len:,} x{args.num_prefix_prompts} "
-        f"| fresh={fresh_len:,} x{args.entries}"
+        f"| fresh={fresh_len:,} x{args.entries} | prefix-seed={args.seed} tail-seed={tail_seed}"
     )
 
-    rng = random.Random(args.seed)
+    prefix_rng = random.Random(args.seed)
+    tail_rng = random.Random(tail_seed)
 
-    def draw(n: int) -> list[int]:
+    def draw(rng: random.Random, n: int) -> list[int]:
         start = rng.randrange(n_corpus)
         end = start + n
         out = corpus[start:end]
@@ -66,11 +81,11 @@ def main() -> int:
             out = out + corpus[: end - n_corpus]
         return out
 
-    prefixes = [draw(prefix_len) for _ in range(args.num_prefix_prompts)]
+    prefixes = [draw(prefix_rng, prefix_len) for _ in range(args.num_prefix_prompts)]
 
     with args.out.open("w", encoding="utf-8") as fh:
         for i in range(args.entries):
-            tokens = prefixes[i % args.num_prefix_prompts] + draw(fresh_len)
+            tokens = prefixes[i % args.num_prefix_prompts] + draw(tail_rng, fresh_len)
             fh.write(json.dumps({"text": tok.decode(tokens)}, ensure_ascii=False) + "\n")
 
     # decode/encode is not guaranteed length-preserving, so report what the
