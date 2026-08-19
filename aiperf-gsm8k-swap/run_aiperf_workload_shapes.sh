@@ -247,6 +247,21 @@ TOKENIZER_EXTRA_ARGS=()
 [ "$TOKENIZER_TRUST_REMOTE_CODE" = "true" ] && TOKENIZER_EXTRA_ARGS+=(--tokenizer-trust-remote-code)
 API_KEY_ARGS=()
 [ -n "$API_KEY" ] && API_KEY_ARGS+=(--api-key "$API_KEY")
+
+# URL handling: BASE_URL may be a single endpoint OR a comma-separated list of
+# replica URLs. For a list, emit one --url per replica and add
+# --url-strategy round-robin so aiperf distributes requests evenly across them
+# (client-side round-robin, bypassing any server-side router). Health/metric
+# helpers should use the FIRST url only (${BASE_URL%%,*}).
+URL_ARGS=()
+URL_STRATEGY="${URL_STRATEGY:-round-robin}"
+_url_count=0
+for _u in $(echo "$BASE_URL" | tr ',' ' '); do
+  URL_ARGS+=(--url "$_u"); _url_count=$((_url_count+1))
+done
+if [ "$_url_count" -gt 1 ]; then
+  URL_ARGS+=(--url-strategy "$URL_STRATEGY")
+fi
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$MASTER_LOG"; }
 gen_reqcounts() {
   local conc_csv="$1" mult="$2"
@@ -257,7 +272,9 @@ gen_reqcounts() {
   local IFS=,; echo "${out[*]}"
 }
 wait_for_endpoint() {
-  local health_url="${BASE_URL%/}/health"
+  # for a multi-url list, probe only the first replica
+  local first_url="${BASE_URL%%,*}"
+  local health_url="${first_url%/}/health"
   local elapsed=0 status_code
   if [ "$SKIP_HEALTH_CHECK" = "true" ]; then
     log "Skipping health probe (--skip-health-check); assuming ${BASE_URL} is ready."
@@ -340,7 +357,7 @@ for shape in "${SHAPES[@]}"; do
       --model "$MODEL" \
       --tokenizer "$TOKENIZER" \
       "${TOKENIZER_EXTRA_ARGS[@]}" \
-      --url "$BASE_URL" \
+      "${URL_ARGS[@]}" \
       "${API_KEY_ARGS[@]}" \
       --endpoint-type chat --streaming \
       --use-server-token-count \

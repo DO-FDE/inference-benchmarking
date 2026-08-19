@@ -23,6 +23,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 MODEL="deepseek-ai/DeepSeek-V4-Flash-0731"
 TOKENIZER=""
 URL="http://localhost:8000/"
+URL_STRATEGY="round-robin"
 API_KEY=""
 ISL=120000
 OSL=917
@@ -53,6 +54,10 @@ Core options:
   --model NAME          Served model id            (default: $MODEL)
   --tokenizer NAME      Tokenizer                  (default: --model)
   --url URL             Endpoint the sweep hits    (default: $URL)
+                        Comma-separate multiple replica URLs to have the client
+                        round-robin across them directly (bypassing any router),
+                        e.g. --url http://p0:8000,http://p1:8000,...
+  --url-strategy S      Client strategy when --url has multiple (default: round-robin)
   --api-key KEY         Bearer key                 (optional)
   --isl N               Total input tokens         (default: $ISL)
   --osl N               Output tokens              (default: $OSL)
@@ -86,6 +91,7 @@ while [ $# -gt 0 ]; do
     --model) MODEL="$2"; shift 2;;
     --tokenizer) TOKENIZER="$2"; shift 2;;
     --url|--endpoint) URL="$2"; shift 2;;
+    --url-strategy) URL_STRATEGY="$2"; shift 2;;
     --api-key) API_KEY="$2"; shift 2;;
     --isl) ISL="$2"; shift 2;;
     --osl) OSL="$2"; shift 2;;
@@ -180,7 +186,7 @@ ensure_curl() {
 probe_endpoint() {
   [ "$SKIP_REACH" = true ] && { log "skipping reachability probe (--skip-reach)"; return 0; }
   command -v curl >/dev/null 2>&1 || { log "no curl; skipping probe"; return 0; }
-  local base="${URL%/}" auth=()
+  local base="${URL%%,*}"; base="${base%/}"; auth=()
   [ -n "$API_KEY" ] && auth=(-H "Authorization: Bearer $API_KEY")
   log "probing endpoint: ${base}/v1/models"
   if curl -sf -m 10 "${auth[@]}" "${base}/v1/models" >/dev/null 2>&1 \
@@ -222,6 +228,7 @@ echo "=============================================================="
 echo " DSV4-Flash benchmark"
 echo "   model       : $MODEL"
 echo "   url         : $URL"
+  case "$URL" in *,*) echo "   url-strategy : $URL_STRATEGY (client round-robin across replicas)";; esac
 echo "   ISL/OSL     : $ISL / $OSL   (cached prefix ${CACHE}%)"
 echo "   concurrency : $CONCURRENCY   gpus=$GPUS"
 echo "   prep-gsm8k  : $DO_PREP"
@@ -256,7 +263,7 @@ if [ "$DO_CAPTURE" = true ]; then
 else
   echo; log "[run] aiperf sweep (default)"
   API_ARGS=(); [ -n "$API_KEY" ] && API_ARGS=(--api-key "$API_KEY")
-  ( cd "$OUT_DIR" && "$HARNESS" \
+  ( cd "$OUT_DIR" && URL_STRATEGY="$URL_STRATEGY" "$HARNESS" \
       --model "$MODEL" --tokenizer "$TOKENIZER" \
       --url "$URL" "${API_ARGS[@]}" \
       --isl "$ISL" --osl "$OSL" --cache "$CACHE" \
