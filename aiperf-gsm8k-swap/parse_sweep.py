@@ -118,14 +118,26 @@ def _parse_server_metrics_file(path):
     # even when 'total' is cumulative-since-server-start across a sweep.
     want = {
         "prefix_cache_hits": None, "prefix_cache_queries": None,
+        "prompt_tokens_cached": None, "prompt_tokens": None,
         "spec_decode_num_accepted_tokens": None,
         "spec_decode_num_draft_tokens": None,
         "spec_decode_num_drafts": None,
     }
+    by_source = {}
     per_pos = {}
+    # Two schemas exist:
+    #  (a) {"data": {"endpoint_summaries": {url: {"metrics": {name: {...}}}}}}
+    #  (b) {"metrics": {name: {"series": [...]}}, ...}  (per-run export)
+    metric_dicts = []
     eps = (sm.get("data", {}) or {}).get("endpoint_summaries", {}) or {}
-    for _url, summ in eps.items():
-        for name, m in (summ.get("metrics", {}) or {}).items():
+    if eps:
+        for _url, summ in eps.items():
+            metric_dicts.append(summ.get("metrics", {}) or {})
+    if "metrics" in sm and isinstance(sm["metrics"], dict):
+        metric_dicts.append(sm["metrics"])
+
+    for metrics in metric_dicts:
+        for name, m in metrics.items():
             base = name.replace("vllm:", "")
             for s in m.get("series", []):
                 st = s.get("stats", {}) or {}
@@ -137,21 +149,33 @@ def _parse_server_metrics_file(path):
                     if val is not None:
                         per_pos[int(lbl["position"])] = per_pos.get(int(lbl["position"]), 0) + val
                     continue
+                if base == "prompt_tokens_by_source" and "source" in lbl:
+                    if val is not None:
+                        by_source[lbl["source"]] = by_source.get(lbl["source"], 0) + val
+                    continue
                 if base in want and val is not None:
                     want[base] = (want[base] or 0) + val
 
     out = {}
     H, Q = want["prefix_cache_hits"], want["prefix_cache_queries"]
+    PTC, PT = want["prompt_tokens_cached"], want["prompt_tokens"]
     A = want["spec_decode_num_accepted_tokens"]
     D = want["spec_decode_num_draft_tokens"]
     N = want["spec_decode_num_drafts"]
-    # Only emit physically-possible values. A mistimed/near-empty scrape can yield
-    # hits>queries (cache >100%) or drafts~0 (accept 0% / len 1) -- treat as missing
-    # rather than reporting garbage. Require a meaningful sample size too.
-    MIN_Q = 1000.0   # need real cache traffic
-    MIN_D = 100.0    # need real draft traffic
-    if H is not None and Q and Q >= MIN_Q and 0.0 <= H <= Q:
+    MIN_Q = 1000.0
+    MIN_D = 100.0
+
+    # Cache hit%: prefer prompt_tokens_by_source (self-normalizing, can't exceed
+    # 100%), then prompt_tokens_cached/prompt_tokens, then prefix_cache_hits/queries.
+    src_total = sum(by_source.values()) if by_source else 0
+    src_hit = by_source.get("local_cache_hit", 0)
+    if src_total >= MIN_Q and 0.0 <= src_hit <= src_total:
+        out["Cache Hit%"] = round(100.0 * src_hit / src_total, 2)
+    elif PTC is not None and PT and PT >= MIN_Q and 0.0 <= PTC <= PT:
+        out["Cache Hit%"] = round(100.0 * PTC / PT, 2)
+    elif H is not None and Q and Q >= MIN_Q and 0.0 <= H <= Q:
         out["Cache Hit%"] = round(100.0 * H / Q, 2)
+
     if A is not None and D and D >= MIN_D and 0.0 <= A <= D:
         out["Accept%"] = round(100.0 * A / D, 2)
         if N:
@@ -174,22 +198,23 @@ def _build_server_metrics_map(search_root):
     if not search_root or not os.path.isdir(search_root):
         return {}
     all_sm = glob.glob(os.path.join(search_root, "**", "server_metrics.json"), recursive=True)
-    # split into profiling-phase files vs the rest
+    # the per-run aggregated export: '<name>_server_metrics.json' at the point root
+    per_run = glob.glob(os.path.join(search_root, "**", "*_server_metrics.json"), recursive=True)
+
     prof = [p for p in all_sm if os.path.join("phases", "profiling") in p]
-    other = [p for p in all_sm if p not in prof and "warmup" not in p]  # top-level, not warmup
+    other = [p for p in all_sm if p not in prof and "warmup" not in p]
 
     def _key(p):
         m = _re.search(r"concurrency_(\d+)__requests_\d+", p)
         return int(m.group(1)) if m else None
 
     result = {}
-    for p in prof:  # profiling phase wins
-        metrics = _parse_server_metrics_file(p)
-        if metrics:
-            result[_key(p)] = metrics
-    for p in other:  # only fill gaps profiling didn't cover
-        k = _key(p)
-        if k not in result:
+    # preference: per-run aggregated file > profiling phase > other (non-warmup)
+    for group in (per_run, prof, other):
+        for p in group:
+            k = _key(p)
+            if k in result:
+                continue
             metrics = _parse_server_metrics_file(p)
             if metrics:
                 result[k] = metrics
