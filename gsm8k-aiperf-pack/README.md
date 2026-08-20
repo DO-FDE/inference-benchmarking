@@ -62,6 +62,27 @@ Output:
 Everything lands in the results directory: `report.txt`, `report.json`,
 `run_meta.json` recording the exact configuration, and aiperf's own artifacts.
 
+After the report, a post-benchmark economics step prints the date, output TPS
+per GPU and per node, and $/GPU/hr at DigitalOcean serverless token prices from
+the [gen-ai model catalog](https://api.digitalocean.com/v2/gen-ai/models/catalog)
+(cached-prefix input tokens billed at the cache-read rate). Pass
+`--tps-target N` to also get the number of nodes needed to serve N output
+tokens/s. The catalog model is inferred from `--model`; override with
+`--catalog-model <model_id>` if the match is wrong. Results land in
+`economics.txt` / `economics.json`. If the catalog is unreachable, the step
+degrades to TPS-only and never fails the run.
+
+The name is checked against the catalog **before** the benchmark starts: on no
+match the script prints the closest catalog `model_id`s and asks you to type a
+correct one (empty answer = run without pricing). Non-interactive runs skip the
+prompt and continue without pricing.
+
+```
+      date  conc  out tok/s/gpu  out tok/s/node  $/gpu/hr  nodes@target
+-----------------------------------------------------------------------
+2026-08-20    16          35.48          283.84     21.58            18
+```
+
 ## Measuring the gain on your own hardware
 
 Don't take the numbers above on trust — the effect size depends on your model,
@@ -129,6 +150,7 @@ scripts/
   make_gsm8k_corpus.py    GSM8K -> corpus text
   make_prompt_file.py     corpus -> full-length prompt JSONL
   report.py               Summarise one results directory
+  economics.py            Date / TPS / $ per GPU-hr / nodes-to-target from a report
   compare_ab.py           Compare A/B arms (medians + spread)
 docs/
   METHOD.md               What is measured and why, and what we verified
