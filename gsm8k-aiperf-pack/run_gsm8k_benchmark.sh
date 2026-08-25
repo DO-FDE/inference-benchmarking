@@ -28,12 +28,15 @@ NUM_PREFIX_PROMPTS=8
 CONCURRENCY="16"
 REQ_MULT=5
 WARMUP=3
-SEED=42
+SEED=""   # empty = unique per run; set via --seed to pin
 GPUS=8
 OUT_DIR="$HERE/results_$(date +%Y%m%d_%H%M%S)"
 CORPUS="$HERE/gsm8k_corpus.txt"
 PROMPTS=""
 KEEP_PROMPTS=false
+TPS_TARGET=""
+CATALOG_MODEL=""
+CATALOG_URL="https://api.digitalocean.com/v2/gen-ai/models/catalog"
 
 usage() {
     sed -n '2,15p' "$0" | sed 's/^# \?//'
@@ -51,13 +54,20 @@ Options:
   --concurrency LIST    Comma-separated, e.g. 16,24           (default: 16)
   --req-mult N          Requests per concurrency = N x conc   (default: 5)
   --warmup N            Warmup requests                       (default: 3)
-  --seed N              Prefix-pool seed; tails use N+conc    (default: 42)
+  --seed N              Prefix-pool seed; tails use N+conc
+                        (default: unique per run from time+pid)
   --gpus N              GPU count, for per-GPU throughput     (default: 8)
   --corpus PATH         GSM8K corpus text                     (default: ./gsm8k_corpus.txt)
   --prompts PATH        Reuse one prompt JSONL for every point (skips generation;
                         exact sequences replay and inflate cache hit rate)
   --keep-prompts        Do not delete generated prompt JSONLs on exit
   --out-dir PATH        Results directory
+  --tps-target N        Target aggregate output tokens/s; the post-run economics
+                        step reports how many nodes are needed to hit it
+  --catalog-model ID    DigitalOcean catalog model_id to price against
+                        (default: inferred from --model)
+  --catalog-url URL     Pricing catalog endpoint
+                        (default: DO gen-ai models catalog)
 EOF
 }
 
@@ -80,6 +90,9 @@ while [ $# -gt 0 ]; do
         --prompts) PROMPTS="$2"; shift 2 ;;
         --keep-prompts) KEEP_PROMPTS=true; shift ;;
         --out-dir) OUT_DIR="$2"; shift 2 ;;
+        --tps-target) TPS_TARGET="$2"; shift 2 ;;
+        --catalog-model) CATALOG_MODEL="$2"; shift 2 ;;
+        --catalog-url) CATALOG_URL="$2"; shift 2 ;;
         -h|--help) usage; exit 0 ;;
         *) echo "unknown option: $1" >&2; usage; exit 2 ;;
     esac
@@ -88,6 +101,12 @@ done
 [ -n "$MODEL" ] || { echo "ERROR: --model is required" >&2; usage; exit 2; }
 [ -n "$TOKENIZER" ] || TOKENIZER="$MODEL"
 
+# Fresh base seed every invocation so repeated runs do not replay the same
+# prompts. Within a run, tails still vary by conc (SEED+conc). Pass --seed to pin.
+if [ -z "$SEED" ]; then
+    SEED=$(( ($(date +%s) ^ $$) & 0x7fffffff ))
+fi
+
 command -v aiperf >/dev/null || { echo "ERROR: aiperf not on PATH" >&2; exit 1; }
 
 if ! curl -sf -m 10 "$URL/health" >/dev/null 2>&1 \
@@ -95,6 +114,38 @@ if ! curl -sf -m 10 "$URL/health" >/dev/null 2>&1 \
     echo "ERROR: no server responding at $URL" >&2
     exit 1
 fi
+
+# Pre-flight: make sure the model resolves to a catalog entry for pricing
+# BEFORE spending benchmark time. On a bad name, show close matches and ask
+# the user to type a correct model_id (empty answer = run without pricing).
+CATALOG_MATCH=""
+while :; do
+    lookup="${CATALOG_MODEL:-$MODEL}"
+    resolved="$(python3 "$HERE/scripts/economics.py" --resolve "$lookup" \
+                --catalog-url "$CATALOG_URL")"
+    st=$?
+    if [ $st -eq 0 ]; then
+        CATALOG_MATCH="$resolved"
+        break
+    elif [ $st -eq 2 ]; then
+        echo "WARNING: pricing catalog unreachable; \$/gpu/hr will be n/a" >&2
+        break
+    fi
+    # st=3: no match; suggestions were already printed on stderr
+    if [ -t 0 ]; then
+        printf 'Catalog model_id to price against (empty = no pricing): '
+        read -r ans
+        if [ -z "$ans" ]; then
+            echo "  continuing without pricing"
+            break
+        fi
+        CATALOG_MODEL="$ans"
+    else
+        echo "WARNING: no catalog match for '$lookup' and stdin is not a tty;" >&2
+        echo "         continuing without pricing (or set --catalog-model)" >&2
+        break
+    fi
+done
 
 mkdir -p "$OUT_DIR"
 
@@ -119,6 +170,9 @@ fi
 echo
 echo "=== benchmark ==="
 echo "  model       : $MODEL"
+if [ -n "$CATALOG_MATCH" ]; then
+    echo "  pricing     : $(printf '%s' "$CATALOG_MATCH" | awk -F'\t' '{print $2" (model_id "$1")"}')"
+fi
 echo "  url         : $URL"
 echo "  ISL/OSL     : $ISL / $OSL   (cached prefix ${CACHE}%)"
 echo "  concurrency : $CONCURRENCY"
@@ -191,12 +245,22 @@ cat > "$OUT_DIR/run_meta.json" <<EOF
  "num_prefix_prompts": $NUM_PREFIX_PROMPTS, "concurrency": "$CONCURRENCY",
  "req_mult": $REQ_MULT, "warmup": $WARMUP, "seed": $SEED, "gpus": $GPUS,
  "prompt_source": "$prompt_source", "unique_tails_per_conc": $unique_tails,
- "corpus": "$CORPUS"}
+ "corpus": "$CORPUS", "tps_target": ${TPS_TARGET:-null}}
 EOF
 
 echo
 echo "=== report ==="
 GPUS="$GPUS" python3 "$HERE/scripts/report.py" "$OUT_DIR" | tee "$OUT_DIR/report.txt"
+
+echo
+echo "=== economics ==="
+GPUS="$GPUS" python3 "$HERE/scripts/economics.py" "$OUT_DIR" \
+    --catalog-url "$CATALOG_URL" \
+    ${CATALOG_MODEL:+--catalog-model "$CATALOG_MODEL"} \
+    ${TPS_TARGET:+--tps-target "$TPS_TARGET"} \
+    | tee "$OUT_DIR/economics.txt" \
+    || echo "economics step failed (benchmark results are unaffected)"
+
 echo
 echo "Results in $OUT_DIR"
 exit $status_all
