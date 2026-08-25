@@ -28,7 +28,7 @@ NUM_PREFIX_PROMPTS=8
 CONCURRENCY="16"
 REQ_MULT=5
 WARMUP=3
-SEED=42
+SEED=""   # empty = unique per run; set via --seed to pin
 GPUS=8
 OUT_DIR="$HERE/results_$(date +%Y%m%d_%H%M%S)"
 CORPUS="$HERE/gsm8k_corpus.txt"
@@ -54,7 +54,8 @@ Options:
   --concurrency LIST    Comma-separated, e.g. 16,24           (default: 16)
   --req-mult N          Requests per concurrency = N x conc   (default: 5)
   --warmup N            Warmup requests                       (default: 3)
-  --seed N              Prefix-pool seed; tails use N+conc    (default: 42)
+  --seed N              Prefix-pool seed; tails use N+conc
+                        (default: unique per run from time+pid)
   --gpus N              GPU count, for per-GPU throughput     (default: 8)
   --corpus PATH         GSM8K corpus text                     (default: ./gsm8k_corpus.txt)
   --prompts PATH        Reuse one prompt JSONL for every point (skips generation;
@@ -99,6 +100,12 @@ done
 
 [ -n "$MODEL" ] || { echo "ERROR: --model is required" >&2; usage; exit 2; }
 [ -n "$TOKENIZER" ] || TOKENIZER="$MODEL"
+
+# Fresh base seed every invocation so repeated runs do not replay the same
+# prompts. Within a run, tails still vary by conc (SEED+conc). Pass --seed to pin.
+if [ -z "$SEED" ]; then
+    SEED=$(( ($(date +%s) ^ $$) & 0x7fffffff ))
+fi
 
 command -v aiperf >/dev/null || { echo "ERROR: aiperf not on PATH" >&2; exit 1; }
 
