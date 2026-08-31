@@ -1,5 +1,21 @@
 # aiperf cache-validation profile
 
+## What it simulates
+
+aiperf drives **64 simultaneous users**, each holding their own chat
+conversation with the model. Every user carries a large personal context
+(~112k tokens — think uploaded documents or imported history) plus a 2k-token
+system prompt shared by everyone. A user sends a message (~12.7k tokens),
+reads the streamed reply, thinks for ~30 seconds, and sends a follow-up —
+for around 8 turns, though some sessions end after 2 and some run past 15.
+When a user's conversation ends, a new user with a fresh (uncached) context
+takes their place, so the server sees constant session churn, just like a
+production chat service.
+
+Because each turn resends the same per-user context and growing history, a
+server with working prefix/KV caching should serve most prompt tokens from
+cache. That cache-hit percentage is the number this profile measures.
+
 Reproducible multi-turn, long-context `aiperf profile` for exercising
 prefix / KV cache behaviour under sustained chat load (DeepSeek-V4-Flash-0731
 defaults).
