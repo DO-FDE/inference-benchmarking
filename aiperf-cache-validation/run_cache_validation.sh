@@ -4,9 +4,9 @@
 # prefix-cache validation (DeepSeek-V4-Flash-0731 defaults).
 #
 # Simulates concurrent users holding chat sessions against a long shared
-# system prompt + per-user context, with human-like variability: turn counts
-# and think time vary per session, completions stop naturally, and finished
-# users are replaced by fresh (cache-cold) conversations.
+# system prompt + per-user context, with human-like variability: think time
+# varies per turn, completions stop naturally, and finished users are
+# replaced by fresh (cache-cold) conversations.
 #
 # Usage:
 #   export API="https://your-endpoint/"
@@ -37,7 +37,11 @@ RATE="${RATE:-1.6}"                  # --user-centric-rate (QPS across all users
 NUM_USERS="${NUM_USERS:-64}"         # --num-users
 CONVERSATIONS="${CONVERSATIONS:-256}" # --conversation-num; > num-users => churn
 TURN_MEAN="${TURN_MEAN:-8}"          # --conversation-turn-mean
-TURN_STDDEV="${TURN_STDDEV:-6}"      # --conversation-turn-stddev
+# NOTE: keep 0 with --user-centric-rate. aiperf samples each session's turn
+# count independently from the generated conversation's actual length, so a
+# nonzero stddev triggers "num_turns (N) exceeds conversation length (M)"
+# errors in the workers.
+TURN_STDDEV="${TURN_STDDEV:-0}"      # --conversation-turn-stddev
 TURN_DELAY_MEAN="${TURN_DELAY_MEAN:-30000}"     # ms think time between turns
 TURN_DELAY_STDDEV="${TURN_DELAY_STDDEV:-25000}" # ms; high stddev ~ human variance
 SHARED_SYSTEM_PROMPT="${SHARED_SYSTEM_PROMPT:-2000}"  # tokens, shared by all users
@@ -75,7 +79,9 @@ Load shape:
   --conversations N         Unique conversations; keep > num-users
                             so fresh cache-cold sessions arrive     (default: 256)
   --turn-mean N             Mean turns per conversation             (default: 8)
-  --turn-stddev N           Stddev of turns per conversation        (default: 6)
+  --turn-stddev N           Stddev of turns per conversation        (default: 0;
+                            nonzero values crash aiperf's user-centric mode,
+                            see README)
   --turn-delay-mean MS      Mean think time between turns           (default: 30000)
   --turn-delay-stddev MS    Stddev of think time                    (default: 25000)
   --shared-system-prompt N  Shared system prompt tokens             (default: 2000)
@@ -155,6 +161,14 @@ command -v aiperf >/dev/null 2>&1 || {
 if [ "$TURN_MEAN" -lt 2 ]; then
     echo "ERROR: --turn-mean must be >= 2 (user-centric rate mode is multi-turn only)" >&2
     exit 2
+fi
+
+if [ "$TURN_STDDEV" != "0" ]; then
+    echo "WARNING: --turn-stddev $TURN_STDDEV with user-centric rate mode can crash" >&2
+    echo "         workers with 'num_turns (N) exceeds conversation length (M)':" >&2
+    echo "         aiperf samples per-session turn counts independently from each" >&2
+    echo "         generated conversation's actual length. Use 0 unless your aiperf" >&2
+    echo "         version has fixed this." >&2
 fi
 
 if [ -z "$RANDOM_SEED" ]; then

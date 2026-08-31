@@ -6,8 +6,8 @@ aiperf drives **64 simultaneous users**, each holding their own chat
 conversation with the model. Every user carries a large personal context
 (~112k tokens — think uploaded documents or imported history) plus a 2k-token
 system prompt shared by everyone. A user sends a message (~12.7k tokens),
-reads the streamed reply, thinks for ~30 seconds, and sends a follow-up —
-for around 8 turns, though some sessions end after 2 and some run past 15.
+reads the streamed reply, thinks for ~30 seconds (with wide variance), and
+sends a follow-up — for 8 turns per conversation.
 When a user's conversation ends, a new user with a fresh (uncached) context
 takes their place, so the server sees constant session churn, just like a
 production chat service.
@@ -70,8 +70,8 @@ Every aiperf flag the wrapper emits, and why it is set:
 | `--user-centric-rate` | 1.6 | Enables user-centric scheduling at 1.6 requests/s aggregate. Each user's turns are spaced `num_users / rate` seconds apart (here 64 / 1.6 = 40 s floor), independent of other users — like real users who don't coordinate. This mode is designed for KV-cache benchmarking; it cannot be combined with `--request-rate` or `--arrival-pattern`. |
 | `--num-users` | 64 | Number of concurrent simulated users, i.e. how many distinct 112k contexts the cache must hold at once. |
 | `--conversation-num` | 256 | Total unique conversations for the run. Set **above** `--num-users` so that when a user's conversation ends, a fresh cache-cold conversation takes its place — real services see constant session churn, and a benchmark where the same 64 sessions run forever overstates cache hit rates. |
-| `--conversation-turn-mean` | 8 | Mean turns per conversation. Real chat sessions are mostly short with a long tail, not uniform marathons. |
-| `--conversation-turn-stddev` | 6 | Spread of turns per conversation (normal distribution): many 2–5-turn sessions, occasional 15–20-turn ones. Set to 0 for uniform lengths. |
+| `--conversation-turn-mean` | 8 | Mean turns per conversation. Real chat sessions are mostly short, not uniform marathons. |
+| `--conversation-turn-stddev` | 0 | Spread of turns per conversation. **Must stay 0 with `--user-centric-rate`**: aiperf samples each session's turn count independently from the generated conversation's actual length, so any nonzero stddev eventually raises `num_turns (N) exceeds conversation length (M)` in the workers. The wrapper warns if you set it. |
 | `--conversation-turn-delay-mean` | 30000 ms | Mean think time between receiving a response and sending the next message. |
 | `--conversation-turn-delay-stddev` | 25000 ms | Spread of think time. High relative to the mean on purpose: real think time is heavy-tailed (fast follow-ups and long pauses), and a wide normal distribution is the closest available approximation. This is also what stresses cache TTL — entries must survive the long pauses. |
 
@@ -125,6 +125,16 @@ DeepSeek-V4-Flash-0731 (see repo history / benchmark reports):
 A p50 cache-read near zero with a decent average means only a minority of
 requests (deep conversations) ever hit the cache: check for load balancing
 without session affinity or aggressive eviction.
+
+## Troubleshooting
+
+**`ValueError: num_turns (N) exceeds conversation length (M)`** in worker
+logs: you are running with a nonzero `--turn-stddev` (or an aiperf version
+with the same scheduling behaviour). In user-centric rate mode, aiperf's
+scheduler draws each session's turn count from the turn distribution
+independently of the turn count the conversation was actually generated
+with, so variance makes the two disagree. Set `--turn-stddev 0` (the
+default) and rerun.
 
 ## Legacy profile
 
