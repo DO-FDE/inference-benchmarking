@@ -2,15 +2,26 @@
 
 ## What it simulates
 
-aiperf drives **64 simultaneous users**, each holding their own chat
-conversation with the model. Every user carries a large personal context
-(~112k tokens — think uploaded documents or imported history) plus a 2k-token
-system prompt shared by everyone. A user sends a message (~12.7k tokens),
-reads the streamed reply, thinks for ~30 seconds (with wide variance), and
-sends a follow-up — for 8 turns per conversation.
-When a user's conversation ends, a new user with a fresh (uncached) context
-takes their place, so the server sees constant session churn, just like a
-production chat service.
+aiperf drives **64 simultaneous users**, each holding their own 8-turn chat
+conversation with the model, paced at 1.6 requests/s in aggregate — so any
+single user's turns are at least ~40 seconds apart (64 users / 1.6 QPS), the
+way independent people naturally interleave.
+
+Every user carries a large personal context (~112k tokens — think uploaded
+documents or imported history) plus a 2k-token system prompt shared by
+everyone. A turn looks like a real exchange: the user sends a message of
+12,700 ± 4,000 tokens, reads the streamed reply (the model targets ~917
+tokens but stops wherever it naturally finishes), thinks it over for
+30 ± 25 seconds — sometimes firing right back, sometimes pausing for a
+minute — and sends a follow-up.
+
+When a user finishes their 8th turn, a **new user with a fresh, uncached
+context** takes their seat. With 256 unique conversations feeding 64 seats
+over the 30-minute window, the server sees constant session churn instead of
+the same warm sessions forever, and 256 distinct turn prompts ensure no
+request is ever a verbatim replay. (Turns per conversation are uniform at 8:
+aiperf's user-centric mode cannot randomize turn counts — see
+[Troubleshooting](#troubleshooting).)
 
 Because each turn resends the same per-user context and growing history, a
 server with working prefix/KV caching should serve most prompt tokens from
@@ -18,13 +29,8 @@ cache. That cache-hit percentage is the number this profile measures.
 
 Reproducible multi-turn, long-context `aiperf profile` for exercising
 prefix / KV cache behaviour under sustained chat load (DeepSeek-V4-Flash-0731
-defaults).
-
-The defaults are tuned to mimic real user behaviour, not a lab pattern:
-turn counts and think time vary per session, completions stop where the model
-stops, and finished users are replaced by fresh cache-cold conversations. To
-reproduce the original fixed-length profile instead, see
-[Legacy profile](#legacy-profile) below.
+defaults). To reproduce the original fixed-length profile (32 uniform turns,
+pinned output length, no churn), see [Legacy profile](#legacy-profile) below.
 
 ## Quick start
 
