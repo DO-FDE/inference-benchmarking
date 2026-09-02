@@ -44,7 +44,7 @@ TURN_MEAN="${TURN_MEAN:-8}"          # --conversation-turn-mean
 TURN_STDDEV="${TURN_STDDEV:-0}"      # --conversation-turn-stddev
 TURN_DELAY_MEAN="${TURN_DELAY_MEAN:-30000}"     # ms think time between turns
 TURN_DELAY_STDDEV="${TURN_DELAY_STDDEV:-25000}" # ms; high stddev ~ human variance
-SHARED_SYSTEM_PROMPT="${SHARED_SYSTEM_PROMPT:-2000}"  # tokens, shared by all users
+SHARED_SYSTEM_PROMPT="${SHARED_SYSTEM_PROMPT:-8000}"  # tokens, shared by all users
 USER_CONTEXT="${USER_CONTEXT:-112000}"                # tokens, unique per user
 DATASET_ENTRIES="${DATASET_ENTRIES:-256}"             # unique turn prompts
 
@@ -84,7 +84,7 @@ Load shape:
                             see README)
   --turn-delay-mean MS      Mean think time between turns           (default: 30000)
   --turn-delay-stddev MS    Stddev of think time                    (default: 25000)
-  --shared-system-prompt N  Shared system prompt tokens             (default: 2000)
+  --shared-system-prompt N  Shared system prompt tokens             (default: 8000)
   --user-context N          Per-user context prompt tokens          (default: 112000)
   --dataset-entries N       Unique turn prompts in the dataset      (default: 256)
 
