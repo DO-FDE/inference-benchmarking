@@ -117,31 +117,6 @@ Every aiperf flag the wrapper emits, and why it is set:
 | `--ui simple` | fixed | Plain-text progress output, safe for logs and CI. |
 | `--export-level raw` | fixed | Exports every per-request record, not just aggregates — needed to analyze cache-read distributions and per-turn behaviour after the run. |
 
-## Reading the result
-
-The headline number is **Overall Usage Prompt Cache Read %** in the LLM
-metrics table. Interpretation guide from measured runs of this profile against
-DeepSeek-V4-Flash-0731 (see repo history / benchmark reports):
-
-- Dedicated endpoint, healthy cache: **~79–91%** overall, p50 cache read in the
-  hundreds of thousands of tokens.
-- Broken or non-sticky caching: **~28%** overall with p50 cache read near zero
-  — the per-user context is being reprocessed every turn.
-
-A p50 cache-read near zero with a decent average means only a minority of
-requests (deep conversations) ever hit the cache: check for load balancing
-without session affinity or aggressive eviction.
-
-## Troubleshooting
-
-**`ValueError: num_turns (N) exceeds conversation length (M)`** in worker
-logs: you are running with a nonzero `--turn-stddev` (or an aiperf version
-with the same scheduling behaviour). In user-centric rate mode, aiperf's
-scheduler draws each session's turn count from the turn distribution
-independently of the turn count the conversation was actually generated
-with, so variance makes the two disagree. Set `--turn-stddev 0` (the
-default) and rerun.
-
 ## Legacy profile
 
 The original profile used uniform 32-turn conversations, no churn, and pinned
