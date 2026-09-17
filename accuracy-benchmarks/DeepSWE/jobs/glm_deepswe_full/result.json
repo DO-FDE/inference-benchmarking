@@ -1,0 +1,1811 @@
+{
+    "id": "f20f371d-db59-4993-97f0-36263fd32027",
+    "started_at": "2026-09-15T20:54:34.916992",
+    "updated_at": "2026-09-16T19:07:10.845605",
+    "finished_at": "2026-09-16T19:07:10.845605",
+    "n_total_trials": 113,
+    "stats": {
+        "n_completed_trials": 113,
+        "n_errored_trials": 17,
+        "n_running_trials": 0,
+        "n_pending_trials": 0,
+        "n_cancelled_trials": 0,
+        "n_retries": 0,
+        "evals": {
+            "mini-swe-agent__glm-5.3-flash__tasks": {
+                "n_trials": 111,
+                "n_errors": 17,
+                "metrics": [
+                    {
+                        "f2p": 0.7637089921974539,
+                        "f2p_passed": 42.47787610619469,
+                        "f2p_total": 50.91150442477876,
+                        "p2p": 0.9793691886364381,
+                        "p2p_passed": 2045.6106194690265,
+                        "p2p_total": 2045.8318584070796,
+                        "partial": 0.9326312729729858,
+                        "reward": 0.48672566371681414
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "reward": {
+                        "1": [
+                            "cliffy-config-file-parsing__7Donvxk",
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "clack-async-autocomplete-options__YxXZ3KC",
+                            "drizzle-orm-window-function-buil__b8BkGdC",
+                            "abs-module-cache-flags__Pi4Uf3x",
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "koota-deferred-mutation-buffer__8DfHbE4",
+                            "kysely-window-grouping-helpers__NtuA6iv",
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6",
+                            "kombu-single-active-consumer-pri__fFCNhGt",
+                            "go-genai-streamed-function-args__TExme9d",
+                            "vitest-duration-sharding__2LXaixR",
+                            "mobly-grouped-test-barriers__n96X8DG",
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "wasmi-trap-coredumps__3pw7bqn",
+                            "skrub-duration-encoding__KHuabrL",
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "returns-validated-error-accumula__GXWMwur",
+                            "arcane-drift-detection-baselines__q2FfJzE",
+                            "kombu-virtual-queue-dead-letteri__MCreGbo",
+                            "adaptix-name-mapping-aliases__KNG92xK",
+                            "httpx-deterministic-cookie-store__BG2Twmw",
+                            "helm-unified-manifest-stream__EZgWHwe",
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "testem-per-launcher-reports__hwoHx2J",
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn",
+                            "yjs-map-conflict-detection__uycdf3b",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ",
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb",
+                            "koota-query-predicates__UFNJvuj",
+                            "true-myth-iterable-collection-co__vGEA2LQ",
+                            "python-statemachine-state-data-s__siujohg",
+                            "numba-stencil-boundary-modes__WzZagXR",
+                            "scc-bounded-memory-spilling__PeTQcmg",
+                            "yaegi-go-embed-directives__uYMnvTs",
+                            "tomlkit-toml-table-converters__QqRy5Le",
+                            "obsidian-linter-link-format-conv__vxR2Mpa",
+                            "bandit-interprocedural-taint-che__Ab9cWuq",
+                            "task-task-graph-export__adBsdES",
+                            "fastapi-implicit-head-options__3jKV39N",
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd",
+                            "ytt-jsonpath-query-api__Sfzp2Ny",
+                            "actionlint-action-pinning-lint__YJB5ZPj",
+                            "katex-multicolumn-array-spans__mfbECYf",
+                            "happy-dom-abort-pending-body-rea__f9ynspL",
+                            "bandit-incremental-cache-control__ATfNzJn",
+                            "etree-xml-diff-patch__H33Ej9s",
+                            "dasel-html-document-format__Wf6hfnc",
+                            "psd-tools-blend-range-api__ffWtM7S",
+                            "aiomonitor-task-snapshots-diff__CZVYkxL",
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP",
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ",
+                            "textual-richlog-follow-state__XdY7vjT",
+                            "sqlite-utils-safe-import-checkpo__M64Rc76",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "0": [
+                            "awilix-async-container-initializ__qvmSgyX",
+                            "meriyah-explicit-resource-declar__aVqUKjQ",
+                            "fastapi-deprecation-response-hea__QC3UpyK",
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ",
+                            "narwhals-rolling-window-suite__g5g8o98",
+                            "pebble-durability-wait-apis__omqcq9S",
+                            "httpx-streaming-json-iteration__rW67Sh3",
+                            "opa-template-string-reconstructi__jciTYhy",
+                            "query-persist-restored-query-sta__kGbnvV7",
+                            "helm-array-merge-strategies__JxVs7gF",
+                            "anko-typed-variable-bindings__3wDE4ok",
+                            "scriggo-method-declarations__UXxaDcL",
+                            "ink-grid-box-layout__LDLQGUT",
+                            "updo-policy-alerting__BiMHS2j",
+                            "termenv-preserve-ansi-resets__PzsY6Tw",
+                            "participle-grammar-conflict-anal__4aUoLfE",
+                            "kea-atomic-signal-selectors__KyfzTGh",
+                            "gql-incremental-graphql-delivery__a4GaMxT",
+                            "koota-entity-snapshot-rollback__xHDDsRq",
+                            "wazero-multi-module-snapshots__WzaVBWt",
+                            "prometheus-typed-label-sorting__WgGYLca",
+                            "kgateway-consistent-hash-policy__FLq23Xr",
+                            "optique-conditional-option-depen__EZVeMdW",
+                            "eicrud-keyset-pagination-cursor__h8DFULX",
+                            "quill-shared-toolbar-focus__fDyJ5pQ",
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7",
+                            "dynamodb-toolbox-conditional-att__qDmQSA5",
+                            "igel-persist-feature-schema__w9rffvU",
+                            "vulture-persistent-analysis-cach__eyS8uP9",
+                            "langchain-request-coalescing__9CLkUJU",
+                            "effect-sse-httpapi-streaming__xbaXF8b",
+                            "expr-try-catch-errors__aBFyyRN",
+                            "ofetch-per-origin-circuit-breake__pDTGiFc",
+                            "anko-default-function-arguments__kYL7DMD",
+                            "pest-character-class-coalescing__UeTMHVD",
+                            "httpx-multipart-response-parsing__XkG9fXd",
+                            "csstree-shorthand-expansion-comp__fRFpEsC",
+                            "tengo-destructuring-bindings__ZpBrBok",
+                            "tengo-callable-instance-isolatio__nHwUUno",
+                            "goreleaser-retry-publish-auditin__zgfue7P",
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH",
+                            "abs-stepped-slices__GDEHmhP",
+                            "ts-pattern-match-each__t2KLeVA",
+                            "superjson-error-stack-serializat__cBeHJjJ",
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8",
+                            "textual-kitty-key-phases__h3QU3Wq",
+                            "valibot-recursive-schema-composi__R2MUEVJ",
+                            "testem-bail-on-test-failure__5LAmbqk",
+                            "onedump-dump-encryption-pipeline__JSsuvme",
+                            "arktype-json-schema-refs-depende__qognhM6",
+                            "prometheus-transactional-reload__FNGDuHW",
+                            "happy-dom-deterministic-intersec__Ftmt8wJ",
+                            "claude-code-by-agents-recursive__QPDZhKE",
+                            "oxvg-structural-selector-preserv__fbKw7bX",
+                            "go-critic-doc-link-checker__vGUNoN7",
+                            "bandit-structured-nosec-directiv__FrfQWoE"
+                        ]
+                    },
+                    "f2p_total": {
+                        "37": [
+                            "cliffy-config-file-parsing__7Donvxk",
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7"
+                        ],
+                        "38": [
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "yaegi-go-embed-directives__uYMnvTs"
+                        ],
+                        "24": [
+                            "awilix-async-container-initializ__qvmSgyX",
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "igel-persist-feature-schema__w9rffvU",
+                            "vulture-persistent-analysis-cach__eyS8uP9"
+                        ],
+                        "82": [
+                            "clack-async-autocomplete-options__YxXZ3KC",
+                            "arcane-drift-detection-baselines__q2FfJzE",
+                            "onedump-dump-encryption-pipeline__JSsuvme"
+                        ],
+                        "49": [
+                            "meriyah-explicit-resource-declar__aVqUKjQ"
+                        ],
+                        "130": [
+                            "drizzle-orm-window-function-buil__b8BkGdC",
+                            "skrub-duration-encoding__KHuabrL"
+                        ],
+                        "137": [
+                            "fastapi-deprecation-response-hea__QC3UpyK"
+                        ],
+                        "41": [
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ"
+                        ],
+                        "103": [
+                            "narwhals-rolling-window-suite__g5g8o98",
+                            "ytt-jsonpath-query-api__Sfzp2Ny"
+                        ],
+                        "59": [
+                            "pebble-durability-wait-apis__omqcq9S"
+                        ],
+                        "108": [
+                            "httpx-streaming-json-iteration__rW67Sh3"
+                        ],
+                        "20": [
+                            "abs-module-cache-flags__Pi4Uf3x",
+                            "task-task-graph-export__adBsdES",
+                            "textual-richlog-follow-state__XdY7vjT"
+                        ],
+                        "5": [
+                            "opa-template-string-reconstructi__jciTYhy",
+                            "helm-unified-manifest-stream__EZgWHwe"
+                        ],
+                        "8": [
+                            "query-persist-restored-query-sta__kGbnvV7"
+                        ],
+                        "71": [
+                            "koota-deferred-mutation-buffer__8DfHbE4"
+                        ],
+                        "47": [
+                            "helm-array-merge-strategies__JxVs7gF",
+                            "effect-sse-httpapi-streaming__xbaXF8b",
+                            "ofetch-per-origin-circuit-breake__pDTGiFc"
+                        ],
+                        "9": [
+                            "anko-typed-variable-bindings__3wDE4ok",
+                            "yjs-map-conflict-detection__uycdf3b"
+                        ],
+                        "48": [
+                            "scriggo-method-declarations__UXxaDcL"
+                        ],
+                        "25": [
+                            "ink-grid-box-layout__LDLQGUT",
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "arktype-json-schema-refs-depende__qognhM6"
+                        ],
+                        "17": [
+                            "updo-policy-alerting__BiMHS2j",
+                            "gql-incremental-graphql-delivery__a4GaMxT",
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "prometheus-typed-label-sorting__WgGYLca",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ"
+                        ],
+                        "35": [
+                            "termenv-preserve-ansi-resets__PzsY6Tw"
+                        ],
+                        "254": [
+                            "kysely-window-grouping-helpers__NtuA6iv"
+                        ],
+                        "91": [
+                            "participle-grammar-conflict-anal__4aUoLfE",
+                            "tengo-destructuring-bindings__ZpBrBok"
+                        ],
+                        "26": [
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6"
+                        ],
+                        "85": [
+                            "kombu-single-active-consumer-pri__fFCNhGt",
+                            "ts-pattern-match-each__t2KLeVA"
+                        ],
+                        "6": [
+                            "go-genai-streamed-function-args__TExme9d",
+                            "abs-stepped-slices__GDEHmhP",
+                            "oxvg-structural-selector-preserv__fbKw7bX"
+                        ],
+                        "56": [
+                            "vitest-duration-sharding__2LXaixR"
+                        ],
+                        "79": [
+                            "mobly-grouped-test-barriers__n96X8DG",
+                            "expr-try-catch-errors__aBFyyRN",
+                            "csstree-shorthand-expansion-comp__fRFpEsC"
+                        ],
+                        "12": [
+                            "kea-atomic-signal-selectors__KyfzTGh"
+                        ],
+                        "22": [
+                            "wasmi-trap-coredumps__3pw7bqn"
+                        ],
+                        "84": [
+                            "koota-entity-snapshot-rollback__xHDDsRq"
+                        ],
+                        "78": [
+                            "wazero-multi-module-snapshots__WzaVBWt"
+                        ],
+                        "2": [
+                            "kgateway-consistent-hash-policy__FLq23Xr",
+                            "anko-default-function-arguments__kYL7DMD"
+                        ],
+                        "159": [
+                            "returns-validated-error-accumula__GXWMwur"
+                        ],
+                        "36": [
+                            "optique-conditional-option-depen__EZVeMdW"
+                        ],
+                        "14": [
+                            "eicrud-keyset-pagination-cursor__h8DFULX",
+                            "happy-dom-abort-pending-body-rea__f9ynspL",
+                            "happy-dom-deterministic-intersec__Ftmt8wJ"
+                        ],
+                        "13": [
+                            "quill-shared-toolbar-focus__fDyJ5pQ"
+                        ],
+                        "76": [
+                            "kombu-virtual-queue-dead-letteri__MCreGbo"
+                        ],
+                        "44": [
+                            "adaptix-name-mapping-aliases__KNG92xK"
+                        ],
+                        "115": [
+                            "httpx-deterministic-cookie-store__BG2Twmw"
+                        ],
+                        "65": [
+                            "testem-per-launcher-reports__hwoHx2J"
+                        ],
+                        "31": [
+                            "dynamodb-toolbox-conditional-att__qDmQSA5",
+                            "scc-bounded-memory-spilling__PeTQcmg"
+                        ],
+                        "66": [
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn",
+                            "bandit-interprocedural-taint-che__Ab9cWuq"
+                        ],
+                        "51": [
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb"
+                        ],
+                        "50": [
+                            "langchain-request-coalescing__9CLkUJU"
+                        ],
+                        "43": [
+                            "koota-query-predicates__UFNJvuj",
+                            "fastapi-implicit-head-options__3jKV39N",
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP"
+                        ],
+                        "96": [
+                            "true-myth-iterable-collection-co__vGEA2LQ"
+                        ],
+                        "104": [
+                            "pest-character-class-coalescing__UeTMHVD"
+                        ],
+                        "122": [
+                            "httpx-multipart-response-parsing__XkG9fXd"
+                        ],
+                        "72": [
+                            "python-statemachine-state-data-s__siujohg"
+                        ],
+                        "23": [
+                            "tengo-callable-instance-isolatio__nHwUUno",
+                            "textual-kitty-key-phases__h3QU3Wq"
+                        ],
+                        "29": [
+                            "numba-stencil-boundary-modes__WzZagXR",
+                            "goreleaser-retry-publish-auditin__zgfue7P"
+                        ],
+                        "30": [
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH"
+                        ],
+                        "60": [
+                            "tomlkit-toml-table-converters__QqRy5Le",
+                            "obsidian-linter-link-format-conv__vxR2Mpa",
+                            "sqlite-utils-safe-import-checkpo__M64Rc76"
+                        ],
+                        "67": [
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd"
+                        ],
+                        "80": [
+                            "superjson-error-stack-serializat__cBeHJjJ"
+                        ],
+                        "55": [
+                            "actionlint-action-pinning-lint__YJB5ZPj"
+                        ],
+                        "32": [
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8"
+                        ],
+                        "94": [
+                            "katex-multicolumn-array-spans__mfbECYf"
+                        ],
+                        "10": [
+                            "valibot-recursive-schema-composi__R2MUEVJ"
+                        ],
+                        "88": [
+                            "bandit-incremental-cache-control__ATfNzJn"
+                        ],
+                        "90": [
+                            "testem-bail-on-test-failure__5LAmbqk"
+                        ],
+                        "52": [
+                            "etree-xml-diff-patch__H33Ej9s"
+                        ],
+                        "146": [
+                            "dasel-html-document-format__Wf6hfnc"
+                        ],
+                        "15": [
+                            "prometheus-transactional-reload__FNGDuHW"
+                        ],
+                        "45": [
+                            "psd-tools-blend-range-api__ffWtM7S"
+                        ],
+                        "53": [
+                            "aiomonitor-task-snapshots-diff__CZVYkxL"
+                        ],
+                        "7": [
+                            "claude-code-by-agents-recursive__QPDZhKE"
+                        ],
+                        "3": [
+                            "go-critic-doc-link-checker__vGUNoN7"
+                        ],
+                        "69": [
+                            "bandit-structured-nosec-directiv__FrfQWoE",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "33": [
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ"
+                        ]
+                    },
+                    "f2p_passed": {
+                        "37": [
+                            "cliffy-config-file-parsing__7Donvxk"
+                        ],
+                        "38": [
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "yaegi-go-embed-directives__uYMnvTs"
+                        ],
+                        "0": [
+                            "awilix-async-container-initializ__qvmSgyX",
+                            "meriyah-explicit-resource-declar__aVqUKjQ",
+                            "narwhals-rolling-window-suite__g5g8o98",
+                            "httpx-streaming-json-iteration__rW67Sh3",
+                            "opa-template-string-reconstructi__jciTYhy",
+                            "scriggo-method-declarations__UXxaDcL",
+                            "ink-grid-box-layout__LDLQGUT",
+                            "kgateway-consistent-hash-policy__FLq23Xr",
+                            "eicrud-keyset-pagination-cursor__h8DFULX",
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7",
+                            "dynamodb-toolbox-conditional-att__qDmQSA5",
+                            "langchain-request-coalescing__9CLkUJU",
+                            "effect-sse-httpapi-streaming__xbaXF8b",
+                            "expr-try-catch-errors__aBFyyRN",
+                            "anko-default-function-arguments__kYL7DMD",
+                            "tengo-callable-instance-isolatio__nHwUUno",
+                            "ts-pattern-match-each__t2KLeVA",
+                            "valibot-recursive-schema-composi__R2MUEVJ",
+                            "prometheus-transactional-reload__FNGDuHW"
+                        ],
+                        "82": [
+                            "clack-async-autocomplete-options__YxXZ3KC",
+                            "arcane-drift-detection-baselines__q2FfJzE"
+                        ],
+                        "130": [
+                            "drizzle-orm-window-function-buil__b8BkGdC",
+                            "skrub-duration-encoding__KHuabrL"
+                        ],
+                        "127": [
+                            "fastapi-deprecation-response-hea__QC3UpyK"
+                        ],
+                        "36": [
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ"
+                        ],
+                        "56": [
+                            "pebble-durability-wait-apis__omqcq9S",
+                            "vitest-duration-sharding__2LXaixR"
+                        ],
+                        "20": [
+                            "abs-module-cache-flags__Pi4Uf3x",
+                            "task-task-graph-export__adBsdES",
+                            "textual-richlog-follow-state__XdY7vjT"
+                        ],
+                        "7": [
+                            "query-persist-restored-query-sta__kGbnvV7"
+                        ],
+                        "24": [
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "arktype-json-schema-refs-depende__qognhM6"
+                        ],
+                        "71": [
+                            "koota-deferred-mutation-buffer__8DfHbE4"
+                        ],
+                        "47": [
+                            "helm-array-merge-strategies__JxVs7gF"
+                        ],
+                        "8": [
+                            "anko-typed-variable-bindings__3wDE4ok"
+                        ],
+                        "14": [
+                            "updo-policy-alerting__BiMHS2j",
+                            "happy-dom-abort-pending-body-rea__f9ynspL"
+                        ],
+                        "34": [
+                            "termenv-preserve-ansi-resets__PzsY6Tw"
+                        ],
+                        "254": [
+                            "kysely-window-grouping-helpers__NtuA6iv"
+                        ],
+                        "2": [
+                            "participle-grammar-conflict-anal__4aUoLfE",
+                            "abs-stepped-slices__GDEHmhP",
+                            "claude-code-by-agents-recursive__QPDZhKE",
+                            "go-critic-doc-link-checker__vGUNoN7"
+                        ],
+                        "26": [
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6"
+                        ],
+                        "85": [
+                            "kombu-single-active-consumer-pri__fFCNhGt"
+                        ],
+                        "6": [
+                            "go-genai-streamed-function-args__TExme9d",
+                            "igel-persist-feature-schema__w9rffvU"
+                        ],
+                        "79": [
+                            "mobly-grouped-test-barriers__n96X8DG",
+                            "superjson-error-stack-serializat__cBeHJjJ"
+                        ],
+                        "11": [
+                            "kea-atomic-signal-selectors__KyfzTGh",
+                            "quill-shared-toolbar-focus__fDyJ5pQ"
+                        ],
+                        "17": [
+                            "gql-incremental-graphql-delivery__a4GaMxT",
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ"
+                        ],
+                        "22": [
+                            "wasmi-trap-coredumps__3pw7bqn",
+                            "textual-kitty-key-phases__h3QU3Wq"
+                        ],
+                        "83": [
+                            "koota-entity-snapshot-rollback__xHDDsRq"
+                        ],
+                        "76": [
+                            "wazero-multi-module-snapshots__WzaVBWt",
+                            "kombu-virtual-queue-dead-letteri__MCreGbo"
+                        ],
+                        "15": [
+                            "prometheus-typed-label-sorting__WgGYLca"
+                        ],
+                        "159": [
+                            "returns-validated-error-accumula__GXWMwur"
+                        ],
+                        "35": [
+                            "optique-conditional-option-depen__EZVeMdW"
+                        ],
+                        "44": [
+                            "adaptix-name-mapping-aliases__KNG92xK"
+                        ],
+                        "115": [
+                            "httpx-deterministic-cookie-store__BG2Twmw"
+                        ],
+                        "5": [
+                            "helm-unified-manifest-stream__EZgWHwe"
+                        ],
+                        "25": [
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "goreleaser-retry-publish-auditin__zgfue7P"
+                        ],
+                        "65": [
+                            "testem-per-launcher-reports__hwoHx2J"
+                        ],
+                        "66": [
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn",
+                            "bandit-interprocedural-taint-che__Ab9cWuq"
+                        ],
+                        "9": [
+                            "yjs-map-conflict-detection__uycdf3b"
+                        ],
+                        "51": [
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb"
+                        ],
+                        "23": [
+                            "vulture-persistent-analysis-cach__eyS8uP9"
+                        ],
+                        "43": [
+                            "koota-query-predicates__UFNJvuj",
+                            "fastapi-implicit-head-options__3jKV39N",
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP"
+                        ],
+                        "96": [
+                            "true-myth-iterable-collection-co__vGEA2LQ"
+                        ],
+                        "45": [
+                            "ofetch-per-origin-circuit-breake__pDTGiFc",
+                            "psd-tools-blend-range-api__ffWtM7S"
+                        ],
+                        "102": [
+                            "pest-character-class-coalescing__UeTMHVD"
+                        ],
+                        "121": [
+                            "httpx-multipart-response-parsing__XkG9fXd"
+                        ],
+                        "72": [
+                            "python-statemachine-state-data-s__siujohg"
+                        ],
+                        "74": [
+                            "csstree-shorthand-expansion-comp__fRFpEsC"
+                        ],
+                        "86": [
+                            "tengo-destructuring-bindings__ZpBrBok"
+                        ],
+                        "29": [
+                            "numba-stencil-boundary-modes__WzZagXR"
+                        ],
+                        "28": [
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH"
+                        ],
+                        "31": [
+                            "scc-bounded-memory-spilling__PeTQcmg"
+                        ],
+                        "60": [
+                            "tomlkit-toml-table-converters__QqRy5Le",
+                            "obsidian-linter-link-format-conv__vxR2Mpa",
+                            "sqlite-utils-safe-import-checkpo__M64Rc76"
+                        ],
+                        "67": [
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd",
+                            "onedump-dump-encryption-pipeline__JSsuvme"
+                        ],
+                        "103": [
+                            "ytt-jsonpath-query-api__Sfzp2Ny"
+                        ],
+                        "55": [
+                            "actionlint-action-pinning-lint__YJB5ZPj"
+                        ],
+                        "32": [
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8"
+                        ],
+                        "94": [
+                            "katex-multicolumn-array-spans__mfbECYf"
+                        ],
+                        "88": [
+                            "bandit-incremental-cache-control__ATfNzJn"
+                        ],
+                        "87": [
+                            "testem-bail-on-test-failure__5LAmbqk"
+                        ],
+                        "52": [
+                            "etree-xml-diff-patch__H33Ej9s"
+                        ],
+                        "146": [
+                            "dasel-html-document-format__Wf6hfnc"
+                        ],
+                        "13": [
+                            "happy-dom-deterministic-intersec__Ftmt8wJ"
+                        ],
+                        "53": [
+                            "aiomonitor-task-snapshots-diff__CZVYkxL"
+                        ],
+                        "4": [
+                            "oxvg-structural-selector-preserv__fbKw7bX"
+                        ],
+                        "69": [
+                            "bandit-structured-nosec-directiv__FrfQWoE",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "33": [
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ"
+                        ]
+                    },
+                    "p2p_total": {
+                        "451": [
+                            "cliffy-config-file-parsing__7Donvxk"
+                        ],
+                        "172": [
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "koota-query-predicates__UFNJvuj"
+                        ],
+                        "162": [
+                            "awilix-async-container-initializ__qvmSgyX"
+                        ],
+                        "643": [
+                            "clack-async-autocomplete-options__YxXZ3KC"
+                        ],
+                        "51469": [
+                            "meriyah-explicit-resource-declar__aVqUKjQ"
+                        ],
+                        "566": [
+                            "drizzle-orm-window-function-buil__b8BkGdC"
+                        ],
+                        "3134": [
+                            "fastapi-deprecation-response-hea__QC3UpyK",
+                            "fastapi-implicit-head-options__3jKV39N"
+                        ],
+                        "1131": [
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ",
+                            "obsidian-linter-link-format-conv__vxR2Mpa"
+                        ],
+                        "10093": [
+                            "narwhals-rolling-window-suite__g5g8o98"
+                        ],
+                        "44": [
+                            "pebble-durability-wait-apis__omqcq9S"
+                        ],
+                        "1404": [
+                            "httpx-streaming-json-iteration__rW67Sh3"
+                        ],
+                        "3": [
+                            "abs-module-cache-flags__Pi4Uf3x"
+                        ],
+                        "4": [
+                            "opa-template-string-reconstructi__jciTYhy"
+                        ],
+                        "42": [
+                            "query-persist-restored-query-sta__kGbnvV7"
+                        ],
+                        "599": [
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "katex-multicolumn-array-spans__mfbECYf"
+                        ],
+                        "128": [
+                            "koota-deferred-mutation-buffer__8DfHbE4"
+                        ],
+                        "12": [
+                            "helm-array-merge-strategies__JxVs7gF",
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH"
+                        ],
+                        "94": [
+                            "anko-typed-variable-bindings__3wDE4ok"
+                        ],
+                        "1049": [
+                            "scriggo-method-declarations__UXxaDcL"
+                        ],
+                        "49": [
+                            "ink-grid-box-layout__LDLQGUT"
+                        ],
+                        "123": [
+                            "updo-policy-alerting__BiMHS2j"
+                        ],
+                        "87": [
+                            "termenv-preserve-ansi-resets__PzsY6Tw"
+                        ],
+                        "22": [
+                            "kysely-window-grouping-helpers__NtuA6iv",
+                            "quill-shared-toolbar-focus__fDyJ5pQ"
+                        ],
+                        "153": [
+                            "participle-grammar-conflict-anal__4aUoLfE"
+                        ],
+                        "5709": [
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6"
+                        ],
+                        "1421": [
+                            "kombu-single-active-consumer-pri__fFCNhGt"
+                        ],
+                        "62": [
+                            "go-genai-streamed-function-args__TExme9d",
+                            "oxvg-structural-selector-preserv__fbKw7bX"
+                        ],
+                        "24": [
+                            "vitest-duration-sharding__2LXaixR"
+                        ],
+                        "808": [
+                            "mobly-grouped-test-barriers__n96X8DG"
+                        ],
+                        "139": [
+                            "kea-atomic-signal-selectors__KyfzTGh"
+                        ],
+                        "811": [
+                            "gql-incremental-graphql-delivery__a4GaMxT"
+                        ],
+                        "7": [
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "58": [
+                            "wasmi-trap-coredumps__3pw7bqn",
+                            "yaegi-go-embed-directives__uYMnvTs"
+                        ],
+                        "2784": [
+                            "skrub-duration-encoding__KHuabrL"
+                        ],
+                        "47": [
+                            "koota-entity-snapshot-rollback__xHDDsRq"
+                        ],
+                        "29": [
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "goreleaser-retry-publish-auditin__zgfue7P"
+                        ],
+                        "2": [
+                            "wazero-multi-module-snapshots__WzaVBWt",
+                            "arcane-drift-detection-baselines__q2FfJzE",
+                            "helm-unified-manifest-stream__EZgWHwe",
+                            "igel-persist-feature-schema__w9rffvU",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ"
+                        ],
+                        "28": [
+                            "prometheus-typed-label-sorting__WgGYLca"
+                        ],
+                        "214": [
+                            "kgateway-consistent-hash-policy__FLq23Xr"
+                        ],
+                        "61": [
+                            "returns-validated-error-accumula__GXWMwur"
+                        ],
+                        "2034": [
+                            "optique-conditional-option-depen__EZVeMdW"
+                        ],
+                        "168": [
+                            "eicrud-keyset-pagination-cursor__h8DFULX"
+                        ],
+                        "1412": [
+                            "kombu-virtual-queue-dead-letteri__MCreGbo"
+                        ],
+                        "2738": [
+                            "adaptix-name-mapping-aliases__KNG92xK"
+                        ],
+                        "1281": [
+                            "httpx-deterministic-cookie-store__BG2Twmw"
+                        ],
+                        "1267": [
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7",
+                            "dynamodb-toolbox-conditional-att__qDmQSA5"
+                        ],
+                        "6": [
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "abs-stepped-slices__GDEHmhP",
+                            "ts-pattern-match-each__t2KLeVA",
+                            "onedump-dump-encryption-pipeline__JSsuvme",
+                            "textual-richlog-follow-state__XdY7vjT"
+                        ],
+                        "469": [
+                            "testem-per-launcher-reports__hwoHx2J"
+                        ],
+                        "30014": [
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn"
+                        ],
+                        "231": [
+                            "yjs-map-conflict-detection__uycdf3b"
+                        ],
+                        "319": [
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb"
+                        ],
+                        "295": [
+                            "vulture-persistent-analysis-cach__eyS8uP9"
+                        ],
+                        "232": [
+                            "langchain-request-coalescing__9CLkUJU"
+                        ],
+                        "70": [
+                            "effect-sse-httpapi-streaming__xbaXF8b"
+                        ],
+                        "66265": [
+                            "expr-try-catch-errors__aBFyyRN"
+                        ],
+                        "561": [
+                            "true-myth-iterable-collection-co__vGEA2LQ"
+                        ],
+                        "13": [
+                            "ofetch-per-origin-circuit-breake__pDTGiFc"
+                        ],
+                        "119": [
+                            "anko-default-function-arguments__kYL7DMD"
+                        ],
+                        "250": [
+                            "pest-character-class-coalescing__UeTMHVD"
+                        ],
+                        "1272": [
+                            "httpx-multipart-response-parsing__XkG9fXd"
+                        ],
+                        "1286": [
+                            "python-statemachine-state-data-s__siujohg"
+                        ],
+                        "16715": [
+                            "csstree-shorthand-expansion-comp__fRFpEsC"
+                        ],
+                        "132": [
+                            "tengo-destructuring-bindings__ZpBrBok"
+                        ],
+                        "122": [
+                            "tengo-callable-instance-isolatio__nHwUUno"
+                        ],
+                        "827": [
+                            "numba-stencil-boundary-modes__WzZagXR"
+                        ],
+                        "286": [
+                            "scc-bounded-memory-spilling__PeTQcmg"
+                        ],
+                        "964": [
+                            "tomlkit-toml-table-converters__QqRy5Le"
+                        ],
+                        "293": [
+                            "bandit-interprocedural-taint-che__Ab9cWuq"
+                        ],
+                        "17": [
+                            "task-task-graph-export__adBsdES"
+                        ],
+                        "2035": [
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd"
+                        ],
+                        "116": [
+                            "superjson-error-stack-serializat__cBeHJjJ"
+                        ],
+                        "1": [
+                            "ytt-jsonpath-query-api__Sfzp2Ny"
+                        ],
+                        "145": [
+                            "actionlint-action-pinning-lint__YJB5ZPj"
+                        ],
+                        "1273": [
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8"
+                        ],
+                        "57": [
+                            "textual-kitty-key-phases__h3QU3Wq"
+                        ],
+                        "165": [
+                            "happy-dom-abort-pending-body-rea__f9ynspL"
+                        ],
+                        "209": [
+                            "valibot-recursive-schema-composi__R2MUEVJ"
+                        ],
+                        "275": [
+                            "bandit-incremental-cache-control__ATfNzJn"
+                        ],
+                        "489": [
+                            "testem-bail-on-test-failure__5LAmbqk"
+                        ],
+                        "15": [
+                            "etree-xml-diff-patch__H33Ej9s"
+                        ],
+                        "1012": [
+                            "dasel-html-document-format__Wf6hfnc"
+                        ],
+                        "1679": [
+                            "arktype-json-schema-refs-depende__qognhM6"
+                        ],
+                        "82": [
+                            "prometheus-transactional-reload__FNGDuHW"
+                        ],
+                        "979": [
+                            "psd-tools-blend-range-api__ffWtM7S"
+                        ],
+                        "9": [
+                            "happy-dom-deterministic-intersec__Ftmt8wJ"
+                        ],
+                        "8": [
+                            "aiomonitor-task-snapshots-diff__CZVYkxL"
+                        ],
+                        "109": [
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP"
+                        ],
+                        "31": [
+                            "claude-code-by-agents-recursive__QPDZhKE"
+                        ],
+                        "16": [
+                            "go-critic-doc-link-checker__vGUNoN7"
+                        ],
+                        "282": [
+                            "bandit-structured-nosec-directiv__FrfQWoE"
+                        ],
+                        "1133": [
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ"
+                        ],
+                        "1038": [
+                            "sqlite-utils-safe-import-checkpo__M64Rc76"
+                        ]
+                    },
+                    "p2p_passed": {
+                        "451": [
+                            "cliffy-config-file-parsing__7Donvxk"
+                        ],
+                        "172": [
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "koota-query-predicates__UFNJvuj"
+                        ],
+                        "162": [
+                            "awilix-async-container-initializ__qvmSgyX"
+                        ],
+                        "643": [
+                            "clack-async-autocomplete-options__YxXZ3KC"
+                        ],
+                        "51469": [
+                            "meriyah-explicit-resource-declar__aVqUKjQ"
+                        ],
+                        "566": [
+                            "drizzle-orm-window-function-buil__b8BkGdC"
+                        ],
+                        "3134": [
+                            "fastapi-deprecation-response-hea__QC3UpyK",
+                            "fastapi-implicit-head-options__3jKV39N"
+                        ],
+                        "1131": [
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ",
+                            "obsidian-linter-link-format-conv__vxR2Mpa"
+                        ],
+                        "10093": [
+                            "narwhals-rolling-window-suite__g5g8o98"
+                        ],
+                        "44": [
+                            "pebble-durability-wait-apis__omqcq9S"
+                        ],
+                        "1404": [
+                            "httpx-streaming-json-iteration__rW67Sh3"
+                        ],
+                        "3": [
+                            "abs-module-cache-flags__Pi4Uf3x"
+                        ],
+                        "4": [
+                            "opa-template-string-reconstructi__jciTYhy"
+                        ],
+                        "42": [
+                            "query-persist-restored-query-sta__kGbnvV7"
+                        ],
+                        "599": [
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "katex-multicolumn-array-spans__mfbECYf"
+                        ],
+                        "128": [
+                            "koota-deferred-mutation-buffer__8DfHbE4"
+                        ],
+                        "10": [
+                            "helm-array-merge-strategies__JxVs7gF"
+                        ],
+                        "94": [
+                            "anko-typed-variable-bindings__3wDE4ok"
+                        ],
+                        "1049": [
+                            "scriggo-method-declarations__UXxaDcL"
+                        ],
+                        "49": [
+                            "ink-grid-box-layout__LDLQGUT"
+                        ],
+                        "123": [
+                            "updo-policy-alerting__BiMHS2j"
+                        ],
+                        "87": [
+                            "termenv-preserve-ansi-resets__PzsY6Tw"
+                        ],
+                        "22": [
+                            "kysely-window-grouping-helpers__NtuA6iv",
+                            "quill-shared-toolbar-focus__fDyJ5pQ"
+                        ],
+                        "153": [
+                            "participle-grammar-conflict-anal__4aUoLfE"
+                        ],
+                        "5709": [
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6"
+                        ],
+                        "1421": [
+                            "kombu-single-active-consumer-pri__fFCNhGt"
+                        ],
+                        "62": [
+                            "go-genai-streamed-function-args__TExme9d",
+                            "oxvg-structural-selector-preserv__fbKw7bX"
+                        ],
+                        "24": [
+                            "vitest-duration-sharding__2LXaixR"
+                        ],
+                        "808": [
+                            "mobly-grouped-test-barriers__n96X8DG"
+                        ],
+                        "139": [
+                            "kea-atomic-signal-selectors__KyfzTGh"
+                        ],
+                        "810": [
+                            "gql-incremental-graphql-delivery__a4GaMxT"
+                        ],
+                        "7": [
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "58": [
+                            "wasmi-trap-coredumps__3pw7bqn",
+                            "yaegi-go-embed-directives__uYMnvTs"
+                        ],
+                        "2784": [
+                            "skrub-duration-encoding__KHuabrL"
+                        ],
+                        "47": [
+                            "koota-entity-snapshot-rollback__xHDDsRq"
+                        ],
+                        "29": [
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "goreleaser-retry-publish-auditin__zgfue7P"
+                        ],
+                        "2": [
+                            "wazero-multi-module-snapshots__WzaVBWt",
+                            "arcane-drift-detection-baselines__q2FfJzE",
+                            "helm-unified-manifest-stream__EZgWHwe",
+                            "igel-persist-feature-schema__w9rffvU",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ"
+                        ],
+                        "28": [
+                            "prometheus-typed-label-sorting__WgGYLca"
+                        ],
+                        "214": [
+                            "kgateway-consistent-hash-policy__FLq23Xr"
+                        ],
+                        "61": [
+                            "returns-validated-error-accumula__GXWMwur"
+                        ],
+                        "2034": [
+                            "optique-conditional-option-depen__EZVeMdW"
+                        ],
+                        "160": [
+                            "eicrud-keyset-pagination-cursor__h8DFULX"
+                        ],
+                        "1412": [
+                            "kombu-virtual-queue-dead-letteri__MCreGbo"
+                        ],
+                        "2738": [
+                            "adaptix-name-mapping-aliases__KNG92xK"
+                        ],
+                        "1281": [
+                            "httpx-deterministic-cookie-store__BG2Twmw"
+                        ],
+                        "1267": [
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7",
+                            "dynamodb-toolbox-conditional-att__qDmQSA5"
+                        ],
+                        "6": [
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "abs-stepped-slices__GDEHmhP",
+                            "ts-pattern-match-each__t2KLeVA",
+                            "onedump-dump-encryption-pipeline__JSsuvme",
+                            "textual-richlog-follow-state__XdY7vjT"
+                        ],
+                        "469": [
+                            "testem-per-launcher-reports__hwoHx2J"
+                        ],
+                        "30014": [
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn"
+                        ],
+                        "231": [
+                            "yjs-map-conflict-detection__uycdf3b"
+                        ],
+                        "319": [
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb"
+                        ],
+                        "295": [
+                            "vulture-persistent-analysis-cach__eyS8uP9"
+                        ],
+                        "232": [
+                            "langchain-request-coalescing__9CLkUJU"
+                        ],
+                        "70": [
+                            "effect-sse-httpapi-streaming__xbaXF8b"
+                        ],
+                        "66265": [
+                            "expr-try-catch-errors__aBFyyRN"
+                        ],
+                        "561": [
+                            "true-myth-iterable-collection-co__vGEA2LQ"
+                        ],
+                        "13": [
+                            "ofetch-per-origin-circuit-breake__pDTGiFc"
+                        ],
+                        "119": [
+                            "anko-default-function-arguments__kYL7DMD"
+                        ],
+                        "248": [
+                            "pest-character-class-coalescing__UeTMHVD"
+                        ],
+                        "1272": [
+                            "httpx-multipart-response-parsing__XkG9fXd"
+                        ],
+                        "1286": [
+                            "python-statemachine-state-data-s__siujohg"
+                        ],
+                        "16715": [
+                            "csstree-shorthand-expansion-comp__fRFpEsC"
+                        ],
+                        "132": [
+                            "tengo-destructuring-bindings__ZpBrBok"
+                        ],
+                        "122": [
+                            "tengo-callable-instance-isolatio__nHwUUno"
+                        ],
+                        "827": [
+                            "numba-stencil-boundary-modes__WzZagXR"
+                        ],
+                        "12": [
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH"
+                        ],
+                        "286": [
+                            "scc-bounded-memory-spilling__PeTQcmg"
+                        ],
+                        "964": [
+                            "tomlkit-toml-table-converters__QqRy5Le"
+                        ],
+                        "293": [
+                            "bandit-interprocedural-taint-che__Ab9cWuq"
+                        ],
+                        "17": [
+                            "task-task-graph-export__adBsdES"
+                        ],
+                        "2035": [
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd"
+                        ],
+                        "116": [
+                            "superjson-error-stack-serializat__cBeHJjJ"
+                        ],
+                        "1": [
+                            "ytt-jsonpath-query-api__Sfzp2Ny"
+                        ],
+                        "145": [
+                            "actionlint-action-pinning-lint__YJB5ZPj"
+                        ],
+                        "1269": [
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8"
+                        ],
+                        "57": [
+                            "textual-kitty-key-phases__h3QU3Wq"
+                        ],
+                        "165": [
+                            "happy-dom-abort-pending-body-rea__f9ynspL"
+                        ],
+                        "209": [
+                            "valibot-recursive-schema-composi__R2MUEVJ"
+                        ],
+                        "275": [
+                            "bandit-incremental-cache-control__ATfNzJn"
+                        ],
+                        "489": [
+                            "testem-bail-on-test-failure__5LAmbqk"
+                        ],
+                        "15": [
+                            "etree-xml-diff-patch__H33Ej9s",
+                            "go-critic-doc-link-checker__vGUNoN7"
+                        ],
+                        "1012": [
+                            "dasel-html-document-format__Wf6hfnc"
+                        ],
+                        "1679": [
+                            "arktype-json-schema-refs-depende__qognhM6"
+                        ],
+                        "80": [
+                            "prometheus-transactional-reload__FNGDuHW"
+                        ],
+                        "979": [
+                            "psd-tools-blend-range-api__ffWtM7S"
+                        ],
+                        "9": [
+                            "happy-dom-deterministic-intersec__Ftmt8wJ"
+                        ],
+                        "8": [
+                            "aiomonitor-task-snapshots-diff__CZVYkxL"
+                        ],
+                        "109": [
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP"
+                        ],
+                        "31": [
+                            "claude-code-by-agents-recursive__QPDZhKE"
+                        ],
+                        "277": [
+                            "bandit-structured-nosec-directiv__FrfQWoE"
+                        ],
+                        "1133": [
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ"
+                        ],
+                        "1038": [
+                            "sqlite-utils-safe-import-checkpo__M64Rc76"
+                        ]
+                    },
+                    "f2p": {
+                        "1.0": [
+                            "cliffy-config-file-parsing__7Donvxk",
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "clack-async-autocomplete-options__YxXZ3KC",
+                            "drizzle-orm-window-function-buil__b8BkGdC",
+                            "abs-module-cache-flags__Pi4Uf3x",
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "koota-deferred-mutation-buffer__8DfHbE4",
+                            "helm-array-merge-strategies__JxVs7gF",
+                            "kysely-window-grouping-helpers__NtuA6iv",
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6",
+                            "kombu-single-active-consumer-pri__fFCNhGt",
+                            "go-genai-streamed-function-args__TExme9d",
+                            "vitest-duration-sharding__2LXaixR",
+                            "mobly-grouped-test-barriers__n96X8DG",
+                            "gql-incremental-graphql-delivery__a4GaMxT",
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "wasmi-trap-coredumps__3pw7bqn",
+                            "skrub-duration-encoding__KHuabrL",
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "returns-validated-error-accumula__GXWMwur",
+                            "arcane-drift-detection-baselines__q2FfJzE",
+                            "kombu-virtual-queue-dead-letteri__MCreGbo",
+                            "adaptix-name-mapping-aliases__KNG92xK",
+                            "httpx-deterministic-cookie-store__BG2Twmw",
+                            "helm-unified-manifest-stream__EZgWHwe",
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "testem-per-launcher-reports__hwoHx2J",
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn",
+                            "yjs-map-conflict-detection__uycdf3b",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ",
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb",
+                            "koota-query-predicates__UFNJvuj",
+                            "true-myth-iterable-collection-co__vGEA2LQ",
+                            "python-statemachine-state-data-s__siujohg",
+                            "numba-stencil-boundary-modes__WzZagXR",
+                            "scc-bounded-memory-spilling__PeTQcmg",
+                            "yaegi-go-embed-directives__uYMnvTs",
+                            "tomlkit-toml-table-converters__QqRy5Le",
+                            "obsidian-linter-link-format-conv__vxR2Mpa",
+                            "bandit-interprocedural-taint-che__Ab9cWuq",
+                            "task-task-graph-export__adBsdES",
+                            "fastapi-implicit-head-options__3jKV39N",
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd",
+                            "ytt-jsonpath-query-api__Sfzp2Ny",
+                            "actionlint-action-pinning-lint__YJB5ZPj",
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8",
+                            "katex-multicolumn-array-spans__mfbECYf",
+                            "happy-dom-abort-pending-body-rea__f9ynspL",
+                            "bandit-incremental-cache-control__ATfNzJn",
+                            "etree-xml-diff-patch__H33Ej9s",
+                            "dasel-html-document-format__Wf6hfnc",
+                            "psd-tools-blend-range-api__ffWtM7S",
+                            "aiomonitor-task-snapshots-diff__CZVYkxL",
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP",
+                            "bandit-structured-nosec-directiv__FrfQWoE",
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ",
+                            "textual-richlog-follow-state__XdY7vjT",
+                            "sqlite-utils-safe-import-checkpo__M64Rc76",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "0.0": [
+                            "awilix-async-container-initializ__qvmSgyX",
+                            "meriyah-explicit-resource-declar__aVqUKjQ",
+                            "narwhals-rolling-window-suite__g5g8o98",
+                            "httpx-streaming-json-iteration__rW67Sh3",
+                            "opa-template-string-reconstructi__jciTYhy",
+                            "scriggo-method-declarations__UXxaDcL",
+                            "ink-grid-box-layout__LDLQGUT",
+                            "kgateway-consistent-hash-policy__FLq23Xr",
+                            "eicrud-keyset-pagination-cursor__h8DFULX",
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7",
+                            "dynamodb-toolbox-conditional-att__qDmQSA5",
+                            "langchain-request-coalescing__9CLkUJU",
+                            "effect-sse-httpapi-streaming__xbaXF8b",
+                            "expr-try-catch-errors__aBFyyRN",
+                            "anko-default-function-arguments__kYL7DMD",
+                            "tengo-callable-instance-isolatio__nHwUUno",
+                            "ts-pattern-match-each__t2KLeVA",
+                            "valibot-recursive-schema-composi__R2MUEVJ",
+                            "prometheus-transactional-reload__FNGDuHW"
+                        ],
+                        "0.927007299270073": [
+                            "fastapi-deprecation-response-hea__QC3UpyK"
+                        ],
+                        "0.8780487804878049": [
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ"
+                        ],
+                        "0.9491525423728814": [
+                            "pebble-durability-wait-apis__omqcq9S"
+                        ],
+                        "0.875": [
+                            "query-persist-restored-query-sta__kGbnvV7"
+                        ],
+                        "0.8888888888888888": [
+                            "anko-typed-variable-bindings__3wDE4ok"
+                        ],
+                        "0.8235294117647058": [
+                            "updo-policy-alerting__BiMHS2j"
+                        ],
+                        "0.9714285714285714": [
+                            "termenv-preserve-ansi-resets__PzsY6Tw"
+                        ],
+                        "0.02197802197802198": [
+                            "participle-grammar-conflict-anal__4aUoLfE"
+                        ],
+                        "0.9166666666666666": [
+                            "kea-atomic-signal-selectors__KyfzTGh"
+                        ],
+                        "0.9880952380952381": [
+                            "koota-entity-snapshot-rollback__xHDDsRq"
+                        ],
+                        "0.9743589743589743": [
+                            "wazero-multi-module-snapshots__WzaVBWt"
+                        ],
+                        "0.8823529411764706": [
+                            "prometheus-typed-label-sorting__WgGYLca"
+                        ],
+                        "0.9722222222222222": [
+                            "optique-conditional-option-depen__EZVeMdW"
+                        ],
+                        "0.8461538461538461": [
+                            "quill-shared-toolbar-focus__fDyJ5pQ"
+                        ],
+                        "0.25": [
+                            "igel-persist-feature-schema__w9rffvU"
+                        ],
+                        "0.9583333333333334": [
+                            "vulture-persistent-analysis-cach__eyS8uP9"
+                        ],
+                        "0.9574468085106383": [
+                            "ofetch-per-origin-circuit-breake__pDTGiFc"
+                        ],
+                        "0.9807692307692307": [
+                            "pest-character-class-coalescing__UeTMHVD"
+                        ],
+                        "0.9918032786885246": [
+                            "httpx-multipart-response-parsing__XkG9fXd"
+                        ],
+                        "0.9367088607594937": [
+                            "csstree-shorthand-expansion-comp__fRFpEsC"
+                        ],
+                        "0.945054945054945": [
+                            "tengo-destructuring-bindings__ZpBrBok"
+                        ],
+                        "0.8620689655172413": [
+                            "goreleaser-retry-publish-auditin__zgfue7P"
+                        ],
+                        "0.9333333333333333": [
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH"
+                        ],
+                        "0.3333333333333333": [
+                            "abs-stepped-slices__GDEHmhP"
+                        ],
+                        "0.9875": [
+                            "superjson-error-stack-serializat__cBeHJjJ"
+                        ],
+                        "0.9565217391304348": [
+                            "textual-kitty-key-phases__h3QU3Wq"
+                        ],
+                        "0.9666666666666667": [
+                            "testem-bail-on-test-failure__5LAmbqk"
+                        ],
+                        "0.8170731707317073": [
+                            "onedump-dump-encryption-pipeline__JSsuvme"
+                        ],
+                        "0.96": [
+                            "arktype-json-schema-refs-depende__qognhM6"
+                        ],
+                        "0.9285714285714286": [
+                            "happy-dom-deterministic-intersec__Ftmt8wJ"
+                        ],
+                        "0.2857142857142857": [
+                            "claude-code-by-agents-recursive__QPDZhKE"
+                        ],
+                        "0.6666666666666666": [
+                            "oxvg-structural-selector-preserv__fbKw7bX",
+                            "go-critic-doc-link-checker__vGUNoN7"
+                        ]
+                    },
+                    "p2p": {
+                        "1.0": [
+                            "cliffy-config-file-parsing__7Donvxk",
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "awilix-async-container-initializ__qvmSgyX",
+                            "clack-async-autocomplete-options__YxXZ3KC",
+                            "meriyah-explicit-resource-declar__aVqUKjQ",
+                            "drizzle-orm-window-function-buil__b8BkGdC",
+                            "fastapi-deprecation-response-hea__QC3UpyK",
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ",
+                            "narwhals-rolling-window-suite__g5g8o98",
+                            "pebble-durability-wait-apis__omqcq9S",
+                            "httpx-streaming-json-iteration__rW67Sh3",
+                            "abs-module-cache-flags__Pi4Uf3x",
+                            "opa-template-string-reconstructi__jciTYhy",
+                            "query-persist-restored-query-sta__kGbnvV7",
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "koota-deferred-mutation-buffer__8DfHbE4",
+                            "anko-typed-variable-bindings__3wDE4ok",
+                            "scriggo-method-declarations__UXxaDcL",
+                            "ink-grid-box-layout__LDLQGUT",
+                            "updo-policy-alerting__BiMHS2j",
+                            "termenv-preserve-ansi-resets__PzsY6Tw",
+                            "kysely-window-grouping-helpers__NtuA6iv",
+                            "participle-grammar-conflict-anal__4aUoLfE",
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6",
+                            "kombu-single-active-consumer-pri__fFCNhGt",
+                            "go-genai-streamed-function-args__TExme9d",
+                            "vitest-duration-sharding__2LXaixR",
+                            "mobly-grouped-test-barriers__n96X8DG",
+                            "kea-atomic-signal-selectors__KyfzTGh",
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "wasmi-trap-coredumps__3pw7bqn",
+                            "skrub-duration-encoding__KHuabrL",
+                            "koota-entity-snapshot-rollback__xHDDsRq",
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "wazero-multi-module-snapshots__WzaVBWt",
+                            "prometheus-typed-label-sorting__WgGYLca",
+                            "kgateway-consistent-hash-policy__FLq23Xr",
+                            "returns-validated-error-accumula__GXWMwur",
+                            "optique-conditional-option-depen__EZVeMdW",
+                            "arcane-drift-detection-baselines__q2FfJzE",
+                            "quill-shared-toolbar-focus__fDyJ5pQ",
+                            "kombu-virtual-queue-dead-letteri__MCreGbo",
+                            "adaptix-name-mapping-aliases__KNG92xK",
+                            "httpx-deterministic-cookie-store__BG2Twmw",
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7",
+                            "helm-unified-manifest-stream__EZgWHwe",
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "testem-per-launcher-reports__hwoHx2J",
+                            "dynamodb-toolbox-conditional-att__qDmQSA5",
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn",
+                            "igel-persist-feature-schema__w9rffvU",
+                            "yjs-map-conflict-detection__uycdf3b",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ",
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb",
+                            "vulture-persistent-analysis-cach__eyS8uP9",
+                            "langchain-request-coalescing__9CLkUJU",
+                            "koota-query-predicates__UFNJvuj",
+                            "effect-sse-httpapi-streaming__xbaXF8b",
+                            "expr-try-catch-errors__aBFyyRN",
+                            "true-myth-iterable-collection-co__vGEA2LQ",
+                            "ofetch-per-origin-circuit-breake__pDTGiFc",
+                            "anko-default-function-arguments__kYL7DMD",
+                            "httpx-multipart-response-parsing__XkG9fXd",
+                            "python-statemachine-state-data-s__siujohg",
+                            "csstree-shorthand-expansion-comp__fRFpEsC",
+                            "tengo-destructuring-bindings__ZpBrBok",
+                            "tengo-callable-instance-isolatio__nHwUUno",
+                            "numba-stencil-boundary-modes__WzZagXR",
+                            "goreleaser-retry-publish-auditin__zgfue7P",
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH",
+                            "scc-bounded-memory-spilling__PeTQcmg",
+                            "abs-stepped-slices__GDEHmhP",
+                            "ts-pattern-match-each__t2KLeVA",
+                            "yaegi-go-embed-directives__uYMnvTs",
+                            "tomlkit-toml-table-converters__QqRy5Le",
+                            "obsidian-linter-link-format-conv__vxR2Mpa",
+                            "bandit-interprocedural-taint-che__Ab9cWuq",
+                            "task-task-graph-export__adBsdES",
+                            "fastapi-implicit-head-options__3jKV39N",
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd",
+                            "superjson-error-stack-serializat__cBeHJjJ",
+                            "ytt-jsonpath-query-api__Sfzp2Ny",
+                            "actionlint-action-pinning-lint__YJB5ZPj",
+                            "textual-kitty-key-phases__h3QU3Wq",
+                            "katex-multicolumn-array-spans__mfbECYf",
+                            "happy-dom-abort-pending-body-rea__f9ynspL",
+                            "valibot-recursive-schema-composi__R2MUEVJ",
+                            "bandit-incremental-cache-control__ATfNzJn",
+                            "testem-bail-on-test-failure__5LAmbqk",
+                            "onedump-dump-encryption-pipeline__JSsuvme",
+                            "etree-xml-diff-patch__H33Ej9s",
+                            "dasel-html-document-format__Wf6hfnc",
+                            "arktype-json-schema-refs-depende__qognhM6",
+                            "psd-tools-blend-range-api__ffWtM7S",
+                            "happy-dom-deterministic-intersec__Ftmt8wJ",
+                            "aiomonitor-task-snapshots-diff__CZVYkxL",
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP",
+                            "claude-code-by-agents-recursive__QPDZhKE",
+                            "oxvg-structural-selector-preserv__fbKw7bX",
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ",
+                            "textual-richlog-follow-state__XdY7vjT",
+                            "sqlite-utils-safe-import-checkpo__M64Rc76",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "0.8333333333333334": [
+                            "helm-array-merge-strategies__JxVs7gF"
+                        ],
+                        "0.998766954377312": [
+                            "gql-incremental-graphql-delivery__a4GaMxT"
+                        ],
+                        "0.9523809523809523": [
+                            "eicrud-keyset-pagination-cursor__h8DFULX"
+                        ],
+                        "0.992": [
+                            "pest-character-class-coalescing__UeTMHVD"
+                        ],
+                        "0.9968578161822467": [
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8"
+                        ],
+                        "0.975609756097561": [
+                            "prometheus-transactional-reload__FNGDuHW"
+                        ],
+                        "0.9375": [
+                            "go-critic-doc-link-checker__vGUNoN7"
+                        ],
+                        "0.9822695035460993": [
+                            "bandit-structured-nosec-directiv__FrfQWoE"
+                        ]
+                    },
+                    "partial": {
+                        "1.0": [
+                            "cliffy-config-file-parsing__7Donvxk",
+                            "koota-pair-relation-tracking__dXVgiHB",
+                            "clack-async-autocomplete-options__YxXZ3KC",
+                            "drizzle-orm-window-function-buil__b8BkGdC",
+                            "abs-module-cache-flags__Pi4Uf3x",
+                            "geo-shapeindex-serialization__8MkgNoD",
+                            "koota-deferred-mutation-buffer__8DfHbE4",
+                            "kysely-window-grouping-helpers__NtuA6iv",
+                            "sql-formatter-bigquery-pipe-form__UXdbHj6",
+                            "kombu-single-active-consumer-pri__fFCNhGt",
+                            "go-genai-streamed-function-args__TExme9d",
+                            "vitest-duration-sharding__2LXaixR",
+                            "mobly-grouped-test-barriers__n96X8DG",
+                            "boa-hierarchical-evaluation-canc__KNNsxiR",
+                            "wasmi-trap-coredumps__3pw7bqn",
+                            "skrub-duration-encoding__KHuabrL",
+                            "ipython-session-bundle-replay__KYTLDCa",
+                            "returns-validated-error-accumula__GXWMwur",
+                            "arcane-drift-detection-baselines__q2FfJzE",
+                            "kombu-virtual-queue-dead-letteri__MCreGbo",
+                            "adaptix-name-mapping-aliases__KNG92xK",
+                            "httpx-deterministic-cookie-store__BG2Twmw",
+                            "helm-unified-manifest-stream__EZgWHwe",
+                            "opa-rego-rule-profiling__KBoftz7",
+                            "testem-per-launcher-reports__hwoHx2J",
+                            "mashumaro-flattened-dataclass-fi__f6YYnJn",
+                            "yjs-map-conflict-detection__uycdf3b",
+                            "go-git-worktree-merge-conflicts__dRqpbyJ",
+                            "mnamer-daemon-watch-lifecycle__fjLXxAb",
+                            "koota-query-predicates__UFNJvuj",
+                            "true-myth-iterable-collection-co__vGEA2LQ",
+                            "python-statemachine-state-data-s__siujohg",
+                            "numba-stencil-boundary-modes__WzZagXR",
+                            "scc-bounded-memory-spilling__PeTQcmg",
+                            "yaegi-go-embed-directives__uYMnvTs",
+                            "tomlkit-toml-table-converters__QqRy5Le",
+                            "obsidian-linter-link-format-conv__vxR2Mpa",
+                            "bandit-interprocedural-taint-che__Ab9cWuq",
+                            "task-task-graph-export__adBsdES",
+                            "fastapi-implicit-head-options__3jKV39N",
+                            "dateutil-rfc5545-timezone-intero__wvwH8Pd",
+                            "ytt-jsonpath-query-api__Sfzp2Ny",
+                            "actionlint-action-pinning-lint__YJB5ZPj",
+                            "katex-multicolumn-array-spans__mfbECYf",
+                            "happy-dom-abort-pending-body-rea__f9ynspL",
+                            "bandit-incremental-cache-control__ATfNzJn",
+                            "etree-xml-diff-patch__H33Ej9s",
+                            "dasel-html-document-format__Wf6hfnc",
+                            "psd-tools-blend-range-api__ffWtM7S",
+                            "aiomonitor-task-snapshots-diff__CZVYkxL",
+                            "fd-deterministic-multi-key-sorti__NBpZ6SP",
+                            "obsidian-linter-scoped-ignore-ma__QxLipHJ",
+                            "textual-richlog-follow-state__XdY7vjT",
+                            "sqlite-utils-safe-import-checkpo__M64Rc76",
+                            "cattrs-partial-structuring-recov__SEnWpX2"
+                        ],
+                        "0.8709677419354839": [
+                            "awilix-async-container-initializ__qvmSgyX"
+                        ],
+                        "0.9990488761209674": [
+                            "meriyah-explicit-resource-declar__aVqUKjQ"
+                        ],
+                        "0.9969428309385509": [
+                            "fastapi-deprecation-response-hea__QC3UpyK"
+                        ],
+                        "0.9957337883959044": [
+                            "obsidian-linter-auto-table-of-co__T5FaoqZ"
+                        ],
+                        "0.9898979992153786": [
+                            "narwhals-rolling-window-suite__g5g8o98"
+                        ],
+                        "0.970873786407767": [
+                            "pebble-durability-wait-apis__omqcq9S"
+                        ],
+                        "0.9285714285714286": [
+                            "httpx-streaming-json-iteration__rW67Sh3"
+                        ],
+                        "0.4444444444444444": [
+                            "opa-template-string-reconstructi__jciTYhy"
+                        ],
+                        "0.98": [
+                            "query-persist-restored-query-sta__kGbnvV7"
+                        ],
+                        "0.9661016949152542": [
+                            "helm-array-merge-strategies__JxVs7gF"
+                        ],
+                        "0.9902912621359223": [
+                            "anko-typed-variable-bindings__3wDE4ok"
+                        ],
+                        "0.9562443026435734": [
+                            "scriggo-method-declarations__UXxaDcL"
+                        ],
+                        "0.6621621621621622": [
+                            "ink-grid-box-layout__LDLQGUT"
+                        ],
+                        "0.9785714285714285": [
+                            "updo-policy-alerting__BiMHS2j"
+                        ],
+                        "0.9918032786885246": [
+                            "termenv-preserve-ansi-resets__PzsY6Tw"
+                        ],
+                        "0.6352459016393442": [
+                            "participle-grammar-conflict-anal__4aUoLfE"
+                        ],
+                        "0.9933774834437086": [
+                            "kea-atomic-signal-selectors__KyfzTGh"
+                        ],
+                        "0.998792270531401": [
+                            "gql-incremental-graphql-delivery__a4GaMxT"
+                        ],
+                        "0.9923664122137404": [
+                            "koota-entity-snapshot-rollback__xHDDsRq"
+                        ],
+                        "0.975": [
+                            "wazero-multi-module-snapshots__WzaVBWt"
+                        ],
+                        "0.9555555555555556": [
+                            "prometheus-typed-label-sorting__WgGYLca"
+                        ],
+                        "0.9907407407407407": [
+                            "kgateway-consistent-hash-policy__FLq23Xr"
+                        ],
+                        "0.9995169082125603": [
+                            "optique-conditional-option-depen__EZVeMdW"
+                        ],
+                        "0.8791208791208791": [
+                            "eicrud-keyset-pagination-cursor__h8DFULX"
+                        ],
+                        "0.9428571428571428": [
+                            "quill-shared-toolbar-focus__fDyJ5pQ"
+                        ],
+                        "0.9716257668711656": [
+                            "dynamodb-toolbox-lazy-recursive__M89AuV7"
+                        ],
+                        "0.9761171032357473": [
+                            "dynamodb-toolbox-conditional-att__qDmQSA5"
+                        ],
+                        "0.3076923076923077": [
+                            "igel-persist-feature-schema__w9rffvU"
+                        ],
+                        "0.9968652037617555": [
+                            "vulture-persistent-analysis-cach__eyS8uP9"
+                        ],
+                        "0.8226950354609929": [
+                            "langchain-request-coalescing__9CLkUJU"
+                        ],
+                        "0.5982905982905983": [
+                            "effect-sse-httpapi-streaming__xbaXF8b"
+                        ],
+                        "0.9988092367056554": [
+                            "expr-try-catch-errors__aBFyyRN"
+                        ],
+                        "0.9666666666666667": [
+                            "ofetch-per-origin-circuit-breake__pDTGiFc"
+                        ],
+                        "0.9834710743801653": [
+                            "anko-default-function-arguments__kYL7DMD"
+                        ],
+                        "0.9887005649717514": [
+                            "pest-character-class-coalescing__UeTMHVD"
+                        ],
+                        "0.9992826398852224": [
+                            "httpx-multipart-response-parsing__XkG9fXd"
+                        ],
+                        "0.9997022746218888": [
+                            "csstree-shorthand-expansion-comp__fRFpEsC"
+                        ],
+                        "0.9775784753363229": [
+                            "tengo-destructuring-bindings__ZpBrBok"
+                        ],
+                        "0.8413793103448276": [
+                            "tengo-callable-instance-isolatio__nHwUUno"
+                        ],
+                        "0.9310344827586207": [
+                            "goreleaser-retry-publish-auditin__zgfue7P"
+                        ],
+                        "0.9523809523809523": [
+                            "kcp-go-multiplexed-kcp-streams__HJARcaH"
+                        ],
+                        "0.6666666666666666": [
+                            "abs-stepped-slices__GDEHmhP"
+                        ],
+                        "0.06593406593406594": [
+                            "ts-pattern-match-each__t2KLeVA"
+                        ],
+                        "0.9948979591836735": [
+                            "superjson-error-stack-serializat__cBeHJjJ"
+                        ],
+                        "0.9969348659003832": [
+                            "sqlfmt-create-table-ddl-formatti__EQrRQc8"
+                        ],
+                        "0.9875": [
+                            "textual-kitty-key-phases__h3QU3Wq"
+                        ],
+                        "0.954337899543379": [
+                            "valibot-recursive-schema-composi__R2MUEVJ"
+                        ],
+                        "0.9948186528497409": [
+                            "testem-bail-on-test-failure__5LAmbqk"
+                        ],
+                        "0.8295454545454546": [
+                            "onedump-dump-encryption-pipeline__JSsuvme"
+                        ],
+                        "0.9994131455399061": [
+                            "arktype-json-schema-refs-depende__qognhM6"
+                        ],
+                        "0.8247422680412371": [
+                            "prometheus-transactional-reload__FNGDuHW"
+                        ],
+                        "0.9565217391304348": [
+                            "happy-dom-deterministic-intersec__Ftmt8wJ"
+                        ],
+                        "0.868421052631579": [
+                            "claude-code-by-agents-recursive__QPDZhKE"
+                        ],
+                        "0.9705882352941176": [
+                            "oxvg-structural-selector-preserv__fbKw7bX"
+                        ],
+                        "0.8947368421052632": [
+                            "go-critic-doc-link-checker__vGUNoN7"
+                        ],
+                        "0.9857549857549858": [
+                            "bandit-structured-nosec-directiv__FrfQWoE"
+                        ]
+                    }
+                },
+                "exception_stats": {
+                    "AgentTimeoutError": [
+                        "awilix-async-container-initializ__qvmSgyX",
+                        "meriyah-explicit-resource-declar__aVqUKjQ",
+                        "narwhals-rolling-window-suite__g5g8o98",
+                        "httpx-streaming-json-iteration__rW67Sh3",
+                        "opa-template-string-reconstructi__jciTYhy",
+                        "scriggo-method-declarations__UXxaDcL",
+                        "ink-grid-box-layout__LDLQGUT",
+                        "dynamodb-toolbox-lazy-recursive__M89AuV7",
+                        "dynamodb-toolbox-conditional-att__qDmQSA5",
+                        "langchain-request-coalescing__9CLkUJU",
+                        "effect-sse-httpapi-streaming__xbaXF8b",
+                        "expr-try-catch-errors__aBFyyRN",
+                        "anko-default-function-arguments__kYL7DMD",
+                        "tengo-callable-instance-isolatio__nHwUUno",
+                        "valibot-recursive-schema-composi__R2MUEVJ"
+                    ],
+                    "VerifierTimeoutError": [
+                        "pwntools-tube-multiplexing__scTegXW",
+                        "koota-composite-trait-aspects__4A77Q98"
+                    ]
+                }
+            }
+        },
+        "n_input_tokens": 1392018587,
+        "n_cache_tokens": 1366388352,
+        "n_output_tokens": 6638521,
+        "cost_usd": null
+    }
+}
